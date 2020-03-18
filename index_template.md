@@ -14,12 +14,18 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
 </script>
 
 <div style="text-align:center">
-<div id="chart" style="width:800px;height:400px;display:inline-block;"></div><br/>
+<!-- <input type="checkbox" id="chooseR0"> Reproduction Number (R<sub>0</sub>) <input type="range" min="0" max="3" value="1" id="R0" disabled> -->
 
-<input type="checkbox" id="chooseR0"> Reproduction Number (R<sub>0</sub>) <input type="range" min="0" max="3" value="1" id="R0" disabled>
-<div id="R0text" style="width:90px; text-align:center; margin-right:20px; display:inline-block; background:lightgray; padding:3px;"></div>
-<input type="checkbox" id="chooseCFR"> Case Fatality Ratio (CFR) <input type="range" min="0" max="3" value="1" id="CFR" disabled>
-<div id="CFRtext" style="width:90px; text-align:center; margin-right:20px; display:inline-block; background:lightgray; padding:3px;"></div>
+<div id="chart" style="width:100%;height:400px;display:inline-block;"></div><br/>
+
+<div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left;">
+    <input type="checkbox" id="chooseR0"> R<sub>0</sub> <input type="range" min="0" max="3" value="1" id="R0" disabled>
+    <div id="R0text" style="width:90px; text-align:center; margin-right:20px; display:inline-block; background:lightgray; padding:3px;"></div>
+</div>
+<div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left;">
+    <input type="checkbox" id="chooseCFR"> CFR <input type="range" min="0" max="3" value="1" id="CFR" disabled>
+    <div id="CFRtext" style="width:90px; text-align:center; margin-right:20px; display:inline-block; background:lightgray; padding:3px;"></div>
+</div>
 
 </div>
 
