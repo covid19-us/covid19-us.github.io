@@ -85,12 +85,18 @@ def sample_n_infected(n_deaths, R0=None, CFR=None):
     for R0 in R0s:
         for CFR in CFRs:
             for cases, deaths in sims[R0][CFR]:
-                try:
+                exact_match = [i for i, v in enumerate(deaths) if v == n_deaths]
+                if len(exact_match)>=1:
                     samples.append(cases[
-                        next(i for i, v in enumerate(deaths) if v >= n_deaths)
+                        random.choice(exact_match)
                     ])
-                except StopIteration:
-                    pass
+                else:
+                    try:
+                        samples.append(cases[
+                            next(i for i, v in enumerate(deaths) if v >= n_deaths)
+                        ])
+                    except StopIteration:
+                        pass
 
     return samples
 
@@ -116,7 +122,7 @@ for R0 in [1.5, 2, 2.5, 3, None]:
             if len(records) > 0:
                 predictions = sorted(sample_n_infected(
                     records[-1]['death'], R0=R0, CFR=CFR))
-                # predictions = [p for p in predictions if p>=get_positive(allrecords[-1])]
+                # predictions = [p for p in predictions if p >= get_positive(allrecords[-1])]
 
                 print("{}: [{}, {}, {}, {}]".format(
                     state,
