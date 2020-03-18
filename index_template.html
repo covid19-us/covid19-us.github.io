@@ -1,0 +1,88 @@
+<html>
+
+<body>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <div id="chart" style="width:1000px;height:400px;display:inline-block;"></div>
+    <script type='text/javascript'>
+        var stats = {{ stats }};
+
+        var data = [
+            {
+                name: 'Cases estimated from deaths',
+                x: Array(stats.length).fill(1).map((v, j) => j+1),
+                y: Array(stats.length).fill(1).map((v, j) => stats[j][1]['median']),
+                marker: {
+                    color: 'blue',
+                    opacity: 0
+                },
+                type: 'scatter',
+                mode: 'markers',
+            },
+            {
+                name: 'Confirmed cases',
+                x: Array(stats.length).fill(1).map((v, j) => j+1),
+                y: Array(stats.length).fill(1).map((v, j) => stats[j][1]['positive']),
+                type: 'scatter',
+                mode: 'markers',
+            },
+            {
+                name: 'Deaths',
+                x: Array(stats.length).fill(1).map((v, j) => j+1),
+                y: Array(stats.length).fill(1).map((v, j) => stats[j][1]['deaths']),
+                type: 'scatter',
+                mode: 'markers',
+            },
+        ];
+
+        shapes = []
+        for(var j=0; j<stats.length; j++) {
+            if(stats[j][1]['lower50'] != undefined) {
+                shapes.push(
+                    {layer:'below', type:'line', line:{width:3, color:'blue'}, 
+                    x0: j+1, x1: j+1, y0: stats[j][1]['lower50'], y1: stats[j][1]['upper50'] });
+                shapes.push(
+                    {layer:'below', type:'line', line:{width:1, color:'blue'}, 
+                    x0: j+1, x1: j+1, y0: stats[j][1]['lower95'], y1: stats[j][1]['upper95'] });
+            }
+        }
+
+        layout = {
+            hovermode: 'closest',
+            xaxis: {
+                tickvals: Array(stats.length).fill(1).map((v, j) => j+1),
+                ticktext: Array(stats.length).fill(1).map((v, j) => stats[j][0]),
+                range: [0, stats.length+1],
+                showgrid: false,
+                tickson: "boundaries",
+                ticklen: 10,
+                showline: true,
+                showzero: false
+            },
+            // margin: {l:50, b:50, r:0, t:50, pad:0},
+            yaxis: {
+                type: 'log',
+                autorange: true,
+                showgrid: false,
+                showline: false,
+                showzero: false,
+                tickson: "boundaries",
+                ticklen: 10,
+            },
+            legend: {
+                x: 1,
+                xanchor: 'right',
+                y: 1
+            },
+            shapes: shapes
+
+        };
+
+        Plotly.newPlot('chart', data, layout);
+
+    </script>
+
+</body>
+
+</html>
