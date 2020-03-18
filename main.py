@@ -11,8 +11,8 @@ from matplotlib import pyplot as plt
 
 serial_interval = sp.stats.lognorm(s=0.5680, scale=math.exp(1.3868))
 onset_to_death = sp.stats.gamma(4.726, 0, 1/(0.3151))
-
 step = 1  # days
+n_simulations = 500
 
 try:
     with open("sims.json", "r") as f:
@@ -24,24 +24,25 @@ except FileNotFoundError:
         print("simulating R0={} CFR={}".format(R0, CFR))
         max_days = 100
         n_timesteps = int(max_days / step)
-        new_cases = np.zeros(n_timesteps, dtype=np.int)
-        new_deaths = np.zeros(n_timesteps, dtype=np.int)
+        new_cases = np.zeros(n_timesteps, dtype=np.int) # new cases at each timestep
+        new_deaths = np.zeros(n_timesteps, dtype=np.int) # new deaths at each timestep
         new_cases[0] = 1
 
         for t1 in range(n_timesteps):
             interval_next = serial_interval.rvs(new_cases[t1])
-            add_cases = np.round(np.random.choice(
-                t1+interval_next/step,
-                size=np.random.poisson(R0 * new_cases[t1])))
+            add_cases = np.random.choice(
+                np.round(t1+interval_next/step),
+                size=np.random.poisson(R0 * new_cases[t1]))
             interval_death = onset_to_death.rvs(new_cases[t1])
-            add_deaths = np.round(np.random.choice(
-                t1+interval_death/step,
-                size=np.random.poisson(CFR * new_cases[t1])))
+            add_deaths = np.random.choice(
+                np.round(t1+interval_death/step),
+                size=np.random.poisson(CFR * new_cases[t1]))
+
             for t2 in range(t1+1, n_timesteps):
                 new_cases[t2] += (add_cases == t2).sum()
                 new_deaths[t2] += (add_deaths == t2).sum()
 
-            if np.sum(new_deaths[:t1]) > 100:
+            if np.sum(new_deaths[:t1]) > 200:
                 break
 
         return (np.cumsum(new_cases[:t1]).tolist(),
@@ -51,27 +52,27 @@ except FileNotFoundError:
     for R0 in [1.5, 2, 2.5, 3]:
         sims[R0] = {}
         for CFR in [0.005, 0.01, 0.02, 0.03]:
-            sims[R0][CFR] = [sim_days(R0, CFR) for _ in range(200)]
+            sims[R0][CFR] = [sim_days(R0, CFR) for _ in range(n_simulations)]
     with open("sims.json", "w") as f:
         json.dump(sims, f)
     print("saved.")
 
 
-try:
-    with open("data.json", "r") as f:
-        data = json.load(f)
-    print("loaded data")
-except FileNotFoundError:
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
-    url = 'http://covidtracking.com/api/states/daily'
+# try:
+#     with open("data.json", "r") as f:
+#         data = json.load(f)
+#     print("loaded data")
+# except FileNotFoundError:
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
+url = 'http://covidtracking.com/api/states/daily'
 
-    req = Request(url=url, headers=headers)
-    output = urlopen(req).read()
-    data = json.loads(output.decode('utf-8'))
-    with open("data.json", "w") as f:
-        json.dump(data, f)
-    print("saved data")
+req = Request(url=url, headers=headers)
+output = urlopen(req).read()
+data = json.loads(output.decode('utf-8'))
+# with open("data.json", "w") as f:
+#     json.dump(data, f)
+# print("saved data")
 
 
 states = list(set([d['state'] for d in data]))
