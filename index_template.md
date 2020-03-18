@@ -130,4 +130,4 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
 ## Model
 To estimate the number of infections in a state, we run 200 stochastic simulations starting from a single infected individual, and stop each simulation when it reaches the number of deaths currently recorded in that state.
 
-Infections are simulated using a poisson branching process, where the serial interval (time for one individual to infect another) is drawn from a Log-Normal distribution (mean: 4.7 days, std: 2.9 days). The onset-to-death interval for each individual is drawn from a Gamma distribution (mean: 15 days, std: 6.9 days)
+Infections are simulated using a poisson branching process, where the serial interval (time for one individual to infect another) is drawn from a Log-Normal distribution (mean: 4.7 days, std: 2.9 days). The onset-to-death interval for each individual is drawn from a Gamma distribution (mean: 15 days, std: 6.9 days). When R<sub>0</sub> and CFR and not provided above, we marginalise over possible values.
