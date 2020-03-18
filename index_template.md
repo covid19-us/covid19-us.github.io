@@ -16,15 +16,18 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
 <div style="text-align:center">
 <!-- <input type="checkbox" id="chooseR0"> Reproduction Number (R<sub>0</sub>) <input type="range" min="0" max="3" value="1" id="R0" disabled> -->
 
-<div id="chart" style="width:100%;height:400px;display:inline-block;"></div><br/>
+<div id="chart" style="width:100%;height:22rem;display:inline-block;"></div><br/>
 
+<div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left; padding-right:20px">
+    <input type="checkbox" id="onlydeaths" checked/> <label for="onlydeaths">Hide states with no recorded deaths</label>
+</div>
 <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left;">
     <input type="checkbox" id="chooseR0"> R<sub>0</sub> <input type="range" min="0" max="3" value="1" id="R0" disabled>
-    <div id="R0text" style="width:90px; text-align:center; margin-right:20px; display:inline-block; background:lightgray; padding:3px;"></div>
+    <div id="R0text" style="width:80px; text-align:center; margin-right:20px; display:inline-block; background:lightgray; padding:3px;"></div>
 </div>
 <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left;">
     <input type="checkbox" id="chooseCFR"> CFR <input type="range" min="0" max="3" value="1" id="CFR" disabled>
-    <div id="CFRtext" style="width:90px; text-align:center; margin-right:20px; display:inline-block; background:lightgray; padding:3px;"></div>
+    <div id="CFRtext" style="width:80px; text-align:center; margin-right:20px; display:inline-block; background:lightgray; padding:3px;"></div>
 </div>
 
 </div>
@@ -40,6 +43,7 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
         refresh()
     })
     document.getElementById("CFR").addEventListener('input', (event) => {refresh()})
+    document.getElementById("onlydeaths").addEventListener('change', (event) => {refresh()})
 
     var allstats = {{ stats }};
     function refresh(){
@@ -59,10 +63,19 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
         }
         
         var stats = allstats[R0 + "," + CFR];
+        if(document.getElementById("onlydeaths").checked) {
+            _stats = []
+            for(var i=0; i<stats.length; i++) {
+                if(stats[i][1]['deaths']>0) {
+                    _stats.push(stats[i])
+                }
+            }
+            stats = _stats
+        }
         console.log("R0=", R0, "CFR=", CFR)
         var data = [
             {
-                name: 'Cases estimated from deaths',
+                name: 'Estimated cases',
                 x: Array(stats.length).fill(1).map((v, j) => j+1),
                 y: Array(stats.length).fill(1).map((v, j) => stats[j][1]['median']),
                 marker: {
@@ -100,7 +113,7 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
         }
         layout = {
             hovermode: 'closest',
-            title: 'Estimated cases by US state <i>(updated {{ date }})</i>',
+            title: 'Cases by state <i>({{ date }})</i>',
             xaxis: {
                 tickvals: Array(stats.length).fill(1).map((v, j) => j+1),
                 ticktext: Array(stats.length).fill(1).map((v, j) => stats[j][0]),
