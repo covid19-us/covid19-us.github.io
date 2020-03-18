@@ -19,7 +19,7 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
 <div id="chart" style="width:100%;height:22rem;display:inline-block;"></div><br/>
 
 <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left; padding-right:20px">
-    <input type="checkbox" id="onlydeaths" checked/> <label for="onlydeaths">Hide states with no recorded deaths</label>
+    <input type="checkbox" id="onlydeaths"/> <label for="onlydeaths">Hide states with no recorded deaths</label>
 </div>
 <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left;">
     <input type="checkbox" id="chooseR0"> R<sub>0</sub> <input type="range" min="0" max="3" value="1" id="R0" disabled>
@@ -141,6 +141,8 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
         };
         Plotly.newPlot('chart', data, layout,  {staticPlot: true});
     }
+
+    document.getElementById("onlydeaths").checked = window.screen.width<1000;
     refresh();
     
 
