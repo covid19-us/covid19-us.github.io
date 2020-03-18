@@ -134,9 +134,11 @@ for state in states:
 stats_sorted = sorted(stats.items(), key=lambda x: (
     # 'median' in x[1], 
     x[1]['positive']), reverse=True)
+dateint = max(x['date'] for x in allrecords)
+datestr = "{}-{}-{}".format(str(dateint)[:4], str(dateint)[4:6], str(dateint)[6:8])
 
-with open("index_template.html", "r") as f:
+with open("index_template.md", "r") as f:
     template = f.read()
 
-with open("index.html", 'w') as f:
-    f.write(template.replace("{{ stats }}", json.dumps(stats_sorted)))
+with open("index.md", 'w') as f:
+    f.write(template.replace("{{ stats }}", json.dumps(stats_sorted)).replace("{{ date }}", datestr))

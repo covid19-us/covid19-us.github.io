@@ -2,122 +2,86 @@
 layout: default
 ---
 
-Text can be **bold**, _italic_, or ~~strikethrough~~.
+Because tests for COVID-19 are lagging in the US, confirmed cases provide only a loose lower bound on the number of infected people. We use a model to estimate the total number of COVID-19 infections in each state, based on the number of deaths.
 
-[Link to another page](./another-page.html).
+Data collected from [covidtracking.com](https://covidtracking.com/). Model inspired by [Jombart et al.](https://wwwmedrxiv.org/content/10.1101/2020.03.10.20033761v1.full.pdf) (details below).
 
-There should be whitespace between paragraphs.
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
+<div id="chart" style="width:800px;height:400px;display:inline-block;"></div>
+<script type='text/javascript'>
+    var stats = [["NY", {"positive": 1700, "deaths": 7, "lower95": 708, "lower50": 2689, "median": 5579, "upper50": 11427, "upper95": 37484}], ["WA", {"positive": 904, "deaths": 48, "lower95": 5781, "lower50": 21392, "median": 40624, "upper50": 82787, "upper95": 241449}], ["CA", {"positive": 483, "deaths": 11, "lower95": 1224, "lower50": 4509, "median": 8963, "upper50": 18894, "upper95": 59624}], ["NJ", {"positive": 267, "deaths": 3, "lower95": 227, "lower50": 1002, "median": 2254, "upper50": 4727, "upper95": 18437}], ["MA", {"positive": 218}], ["FL", {"positive": 186, "deaths": 6, "lower95": 598, "lower50": 2325, "median": 4671, "upper50": 10063, "upper95": 34052}], ["LA", {"positive": 171, "deaths": 4, "lower95": 333, "lower50": 1401, "median": 3081, "upper50": 6249, "upper95": 23681}], ["CO", {"positive": 160, "deaths": 1, "lower95": 13, "lower50": 185, "median": 548, "upper50": 1496, "upper95": 8171}], ["IL", {"positive": 160, "deaths": 1, "lower95": 13, "lower50": 185, "median": 548, "upper50": 1496, "upper95": 8171}], ["GA", {"positive": 146, "deaths": 1, "lower95": 13, "lower50": 185, "median": 548, "upper50": 1496, "upper95": 8171}], ["PA", {"positive": 96}], ["TN", {"positive": 73}], ["WI", {"positive": 72}], ["OH", {"positive": 67}], ["VA", {"positive": 67, "deaths": 1, "lower95": 13, "lower50": 185, "median": 548, "upper50": 1496, "upper95": 8171}], ["MI", {"positive": 65}], ["TX", {"positive": 64, "deaths": 1, "lower95": 13, "lower50": 185, "median": 548, "upper50": 1496, "upper95": 8171}], ["MN", {"positive": 60}], ["MD", {"positive": 57}], ["NV", {"positive": 55, "deaths": 1, "lower95": 13, "lower50": 185, "median": 548, "upper50": 1496, "upper95": 8171}], ["UT", {"positive": 51}], ["OR", {"positive": 47}], ["CT", {"positive": 41}], ["NC", {"positive": 40}], ["AL", {"positive": 36}], ["SC", {"positive": 33, "deaths": 1, "lower95": 13, "lower50": 185, "median": 548, "upper50": 1496, "upper95": 8171}], ["ME", {"positive": 32}], ["IN", {"positive": 30, "deaths": 2, "lower95": 107, "lower50": 567, "median": 1357, "upper50": 3101, "upper95": 12475}], ["IA", {"positive": 23}], ["NM", {"positive": 23}], ["DC", {"positive": 22}], ["KY", {"positive": 22, "deaths": 1, "lower95": 13, "lower50": 185, "median": 548, "upper50": 1496, "upper95": 8171}], ["AR", {"positive": 22}], ["NE", {"positive": 21}], ["MS", {"positive": 21}], ["RI", {"positive": 21}], ["AZ", {"positive": 20}], ["NH", {"positive": 17}], ["OK", {"positive": 17}], ["DE", {"positive": 16}], ["KS", {"positive": 15, "deaths": 1, "lower95": 13, "lower50": 185, "median": 548, "upper50": 1496, "upper95": 8171}], ["SD", {"positive": 11}], ["HI", {"positive": 10}], ["VT", {"positive": 10}], ["WY", {"positive": 10}], ["MT", {"positive": 8}], ["MO", {"positive": 8}], ["ID", {"positive": 7}], ["GU", {"positive": 5}], ["PR", {"positive": 5}], ["AK", {"positive": 3}], ["ND", {"positive": 3}], ["VI", {"positive": 2}], ["AS", {"positive": 0}], ["MP", {"positive": 0}], ["WV", {"positive": 0}]];
 
-# Header 1
+    var data = [
+        {
+            name: 'Cases estimated from deaths',
+            x: Array(stats.length).fill(1).map((v, j) => j+1),
+            y: Array(stats.length).fill(1).map((v, j) => stats[j][1]['median']),
+            marker: {
+                color: 'blue',
+                opacity: 0
+            },
+            type: 'scatter',
+            mode: 'markers',
+        },
+        {
+            name: 'Confirmed cases',
+            x: Array(stats.length).fill(1).map((v, j) => j+1),
+            y: Array(stats.length).fill(1).map((v, j) => stats[j][1]['positive']),
+            type: 'scatter',
+            mode: 'markers',
+        },
+        {
+            name: 'Deaths',
+            x: Array(stats.length).fill(1).map((v, j) => j+1),
+            y: Array(stats.length).fill(1).map((v, j) => stats[j][1]['deaths']),
+            type: 'scatter',
+            mode: 'markers',
+        },
+    ];
 
-This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
+    shapes = []
+    for(var j=0; j<stats.length; j++) {
+        if(stats[j][1]['lower50'] != undefined) {
+            shapes.push(
+                {layer:'below', type:'line', line:{width:3, color:'blue'}, 
+                x0: j+1, x1: j+1, y0: stats[j][1]['lower50'], y1: stats[j][1]['upper50'] });
+            shapes.push(
+                {layer:'below', type:'line', line:{width:1, color:'blue'}, 
+                x0: j+1, x1: j+1, y0: stats[j][1]['lower95'], y1: stats[j][1]['upper95'] });
+        }
+    }
 
-## Header 2
+    layout = {
+        hovermode: 'closest',
+        title: 'Estimated cases by US state <i>(updated 2020-03-17)</i>',
+        xaxis: {
+            tickvals: Array(stats.length).fill(1).map((v, j) => j+1),
+            ticktext: Array(stats.length).fill(1).map((v, j) => stats[j][0]),
+            range: [0, stats.length+1],
+            showgrid: false,
+            ticklen: 10,
+            showline: true,
+            showzero: false
+        },
+        margin: {t:50, l:50, r:0, b:50},
+        yaxis: {
+            type: 'log',
+            range: [-0.1, 5.2],
+            showgrid: false,
+            showline: false,
+            showzero: false,
+            ticklen: 10,
+        },
+        legend: {
+            x: 1,
+            xanchor: 'right',
+            y: 1
+        },
+        shapes: shapes
 
-> This is a blockquote following a header.
->
-> When something is important enough, you do it even if the odds are not in your favor.
+    };
 
-### Header 3
+    Plotly.newPlot('chart', data, layout);
 
-```js
-// Javascript code with syntax highlighting.
-var fun = function lang(l) {
-  dateformat.i18n = require('./lang/' + l)
-  return true;
-}
-```
-
-```ruby
-# Ruby code with syntax highlighting
-GitHubPages::Dependencies.gems.each do |gem, version|
-  s.add_dependency(gem, "= #{version}")
-end
-```
-
-#### Header 4
-
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-
-##### Header 5
-
-1.  This is an ordered list following a header.
-2.  This is an ordered list following a header.
-3.  This is an ordered list following a header.
-
-###### Header 6
-
-| head1        | head two          | three |
-|:-------------|:------------------|:------|
-| ok           | good swedish fish | nice  |
-| out of stock | good and plenty   | nice  |
-| ok           | good `oreos`      | hmm   |
-| ok           | good `zoute` drop | yumm  |
-
-### There's a horizontal rule below this.
-
-* * *
-
-### Here is an unordered list:
-
-*   Item foo
-*   Item bar
-*   Item baz
-*   Item zip
-
-### And an ordered list:
-
-1.  Item one
-1.  Item two
-1.  Item three
-1.  Item four
-
-### And a nested list:
-
-- level 1 item
-  - level 2 item
-  - level 2 item
-    - level 3 item
-    - level 3 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-
-### Small image
-
-![Octocat](https://github.githubassets.com/images/icons/emoji/octocat.png)
-
-### Large image
-
-![Branching](https://guides.github.com/activities/hello-world/branching.png)
-
-
-### Definition lists can be used with HTML syntax.
-
-<dl>
-<dt>Name</dt>
-<dd>Godzilla</dd>
-<dt>Born</dt>
-<dd>1952</dd>
-<dt>Birthplace</dt>
-<dd>Japan</dd>
-<dt>Color</dt>
-<dd>Green</dd>
-</dl>
-
-```
-Long, single-line code blocks should not wrap. They should horizontally scroll if they are too long. This line should be long enough to demonstrate this.
-```
-
-```
-The final element.
-```
+</script>

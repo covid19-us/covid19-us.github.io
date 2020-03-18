@@ -1,3 +1,6 @@
 _site
+.vscode
 .sass-cache
 .jekyll-metadata
+sims.json
+data.json
