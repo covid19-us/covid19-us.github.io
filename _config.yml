@@ -29,7 +29,7 @@ title: Estimating COVID-19 cases from US deaths
 # theme: jekyll-theme-cayman
 
 show_downloads: "false"
-#google_analytics: [Your Google Analytics tracking ID]
+google_analytics: "UA-72403608-5"
 
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
