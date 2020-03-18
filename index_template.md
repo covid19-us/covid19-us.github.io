@@ -6,7 +6,7 @@ Because tests for COVID-19 are lagging in the US, confirmed cases provide only a
 
 Data collected from [covidtracking.com](https://covidtracking.com/). Model inspired by Jombart et al. ([paper](https://www.medrxiv.org/content/10.1101/2020.03.10.20033761v1.full.pdf), [interactive](https://cmmid.github.io/visualisations/inferring-covid19-cases-from-deaths)), details below).
 
-**WARNING: I am not an epidemiologist! Please do not use this model to make important decisions.**<br/>_Send any comments to lbh (edu) mit (dot) edu_
+**WARNING: I am not an epidemiologist! Please do not use this model to make important decisions.**<br/>
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
@@ -159,3 +159,7 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
 To estimate the number of infections in a state, we run 500 stochastic simulations starting from a single infected individual, and stop each simulation when it reaches the number of deaths currently recorded in that state. 
 
 Infections are simulated using a poisson branching process, where the serial interval (time for one individual to infect another) is drawn from a Log-Normal distribution (mean: 4.7 days, std: 2.9 days). The onset-to-death interval for each individual is drawn from a Gamma distribution (mean: 15 days, std: 6.9 days). When R<sub>0</sub> and CFR are not provided, we marginalise over possible values.
+
+Source code on [GitHub](https://github.com/covid19-us/covid19-us.github.io)
+
+Contact: _lbh (at) mit (dot) edu_
