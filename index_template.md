@@ -4,7 +4,9 @@ layout: default
 
 Because tests for COVID-19 are lagging in the US, confirmed cases provide only a loose lower bound on the number of infected people. This page uses a model to estimate the total number of COVID-19 infections in each state, based on the number of deaths.
 
-Data collected from [covidtracking.com](https://covidtracking.com/). Model inspired by [Jombart et al.](https://www.medrxiv.org/content/10.1101/2020.03.10.20033761v1.full.pdf) (details below).
+Data collected from [covidtracking.com](https://covidtracking.com/). Model inspired by Jombart et al. ([paper](https://www.medrxiv.org/content/10.1101/2020.03.10.20033761v1.full.pdf), [interactive](https://cmmid.github.io/visualisations/inferring-covid19-cases-from-deaths)), details below).
+
+**WARNING: I am not an epidemiologist! Please do not use this model to make important decisions.**<br/>_Send any comments to lbh (edu) mit (dot) edu_
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
@@ -121,7 +123,8 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
                 showgrid: false,
                 ticklen: 10,
                 showline: true,
-                showzero: false
+                showzero: false,
+                fixedrange: true
             },
             margin: {t:50, l:50, r:0, b:50},
             yaxis: {
@@ -131,6 +134,7 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
                 showline: false,
                 showzero: false,
                 ticklen: 10,
+                fixedrange: true
             },
             legend: {
                 x: 1,
@@ -139,12 +143,15 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
             },
             shapes: shapes
         };
-        Plotly.newPlot('chart', data, layout,  {staticPlot: true});
+        Plotly.newPlot('chart', data, layout/*,  {staticPlot: true}*/);
     }
 
     document.getElementById("onlydeaths").checked = window.screen.width<1000;
     refresh();
     
+    $('div').click(function(e) {
+        e.stopPropagation();
+    });
 
 </script>
 
