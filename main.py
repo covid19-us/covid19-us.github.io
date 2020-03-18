@@ -77,10 +77,12 @@ except FileNotFoundError:
 states = list(set([d['state'] for d in data]))
 
 
-def sample_n_infected(n_deaths):
+def sample_n_infected(n_deaths, R0=None, CFR=None):
     samples = []
-    for R0 in [1.5, 2, 2.5, 3]:
-        for CFR in [0.005, 0.01, 0.02, 0.03]:
+    R0s = [1.5, 2, 2.5, 3] if R0 is None else [R0]
+    CFRs = [0.005, 0.01, 0.02, 0.03] if CFR is None else [CFR]
+    for R0 in R0s:
+        for CFR in CFRs:
             for cases, deaths in sims[R0][CFR]:
                 try:
                     samples.append(cases[
@@ -99,46 +101,53 @@ def get_positive(d):
         return 0
 
 
-stats = {}
-for state in states:
-    allrecords = [d for d in data if d['state'] == state]
-    allrecords = sorted(allrecords, key=get_positive)
-    records = [d for d in allrecords
-               if d.get('death', None) is not None
-               and d.get('death', None) != 0]
+allstats = {}
+for R0 in [1.5, 2, 2.5, 3, None]:
+    for CFR in [0.005, 0.01, 0.02, 0.03, None]:
+        stats = {}
+        for state in states:
+            allrecords = [d for d in data if d['state'] == state]
+            allrecords = sorted(allrecords, key=get_positive)
+            records = [d for d in allrecords
+                       if d.get('death', None) is not None
+                       and d.get('death', None) != 0]
 
-    if len(records) > 0:
-        predictions = sorted(sample_n_infected(records[-1]['death']))
+            if len(records) > 0:
+                predictions = sorted(sample_n_infected(
+                    records[-1]['death'], R0=R0, CFR=CFR))
+                # predictions = [p for p in predictions if p>=get_positive(allrecords[-1])]
 
-        print("{}: [{}, {}, {}, {}]".format(
-            state,
-            predictions[int(len(predictions)*0.025)],
-            predictions[int(len(predictions)*0.25)],
-            predictions[int(len(predictions)*0.75)],
-            predictions[int(len(predictions)*0.975)]))
+                print("{}: [{}, {}, {}, {}]".format(
+                    state,
+                    predictions[int(len(predictions)*0.025)],
+                    predictions[int(len(predictions)*0.25)],
+                    predictions[int(len(predictions)*0.75)],
+                    predictions[int(len(predictions)*0.975)]))
 
-        stats[state] = {
-            'positive': get_positive(allrecords[-1]),
-            'deaths': records[-1]['death'],
-            'lower95': predictions[int(len(predictions)*0.025)],
-            'lower50': predictions[int(len(predictions)*0.25)],
-            'median': predictions[int(len(predictions)*0.50)],
-            'upper50': predictions[int(len(predictions)*0.75)],
-            'upper95': predictions[int(len(predictions)*0.975)]
-        }
-    else:
-        stats[state] = {
-            'positive': get_positive(allrecords[-1]),
-        }
+                stats[state] = {
+                    'positive': get_positive(allrecords[-1]),
+                    'deaths': records[-1]['death'],
+                    'lower95': predictions[int(len(predictions)*0.025)],
+                    'lower50': predictions[int(len(predictions)*0.25)],
+                    'median': predictions[int(len(predictions)*0.50)],
+                    'upper50': predictions[int(len(predictions)*0.75)],
+                    'upper95': predictions[int(len(predictions)*0.975)]
+                }
+            else:
+                stats[state] = {
+                    'positive': get_positive(allrecords[-1]),
+                }
+        stats_sorted = sorted(stats.items(), key=lambda x: (
+            x[1]['positive'], x[0]), reverse=True)
+        allstats["{},{}".format(R0, CFR)] = stats_sorted
 
-stats_sorted = sorted(stats.items(), key=lambda x: (
-    # 'median' in x[1], 
-    x[1]['positive']), reverse=True)
 dateint = max(x['date'] for x in allrecords)
-datestr = "{}-{}-{}".format(str(dateint)[:4], str(dateint)[4:6], str(dateint)[6:8])
+datestr = "{}-{}-{}".format(str(dateint)
+                            [:4], str(dateint)[4:6], str(dateint)[6:8])
 
 with open("index_template.md", "r") as f:
     template = f.read()
 
 with open("index.md", 'w') as f:
-    f.write(template.replace("{{ stats }}", json.dumps(stats_sorted)).replace("{{ date }}", datestr))
+    f.write(template.replace("{{ stats }}", json.dumps(
+        allstats)).replace("{{ date }}", datestr))
