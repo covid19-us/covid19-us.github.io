@@ -120,7 +120,7 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
             },
             shapes: shapes
         };
-        Plotly.newPlot('chart', data, layout);
+        Plotly.newPlot('chart', data, layout,  {staticPlot: true});
     }
     refresh();
     
