@@ -174,8 +174,10 @@ if __name__ == "__main__":
                     stats[state] = {
                         'positive': 0,
                     }
-            stats_sorted = sorted(stats.items(), key=lambda x: (
-                x[1].get('median', 0), x[0]), reverse=True)
+            stats_sorted = sorted(stats.items(), key=lambda x:
+                                  (x[1].get('deaths', 0),
+                                   x[1].get('positive', 0), x[0]),
+                                  reverse=True)
             allstats["{},{}".format(R0, CFR)] = stats_sorted
 
     # Update webpage
