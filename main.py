@@ -169,7 +169,7 @@ if __name__ == "__main__":
                 #         'positive': get_positive(allrecords[-1]),
                 #     }
             stats_sorted = sorted(stats.items(), key=lambda x: (
-                x[1]['positive'], x[0]), reverse=True)
+                x[1]['median'], x[0]), reverse=True)
             allstats["{},{}".format(R0, CFR)] = stats_sorted
 
             
