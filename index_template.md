@@ -31,7 +31,7 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
     <input type="checkbox" id="chooseCFR"> CFR <input type="range" min="0" max="3" value="1" id="CFR" disabled>
     <div id="CFRtext" style="width:80px; text-align:center; margin-right:20px; display:inline-block; background:lightgray; padding:3px;"></div>
 </div>
-
+<br/><i>(hover cursor over graph for numerical values)</i>
 </div>
 
 <script>
@@ -116,7 +116,7 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
         }
         layout = {
             hovermode: 'closest',
-            title: 'Cases by state <i>({{ date }})</i>',
+            title: 'Infections by state <i>({{ date }})</i>',
             xaxis: {
                 tickvals: Array(stats.length).fill(1).map((v, j) => j+1),
                 ticktext: Array(stats.length).fill(1).map((v, j) => stats[j][0]),
