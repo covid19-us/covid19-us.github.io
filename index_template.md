@@ -4,7 +4,7 @@ layout: default
 
 Because tests for COVID-19 are lagging in the US, confirmed cases provide only a loose lower bound on the number of infected people. This page uses a model to estimate the total number of COVID-19 infections in each state, based on the number of deaths.
 
-Data collected from [covidtracking.com](https://covidtracking.com/). Model inspired by Jombart et al. ([paper](https://www.medrxiv.org/content/10.1101/2020.03.10.20033761v1.full.pdf), [interactive](https://cmmid.github.io/visualisations/inferring-covid19-cases-from-deaths)), details below.
+Data collected from [covidtracking.com](https://covidtracking.com/). Model inspired by Jombart et al. ([paper](https://www.medrxiv.org/content/10.1101/2020.03.10.20033761v1.full.pdf), [interactive](https://cmmid.github.io/visualisations/inferring-covid19-cases-from-deaths)), details below. Source code is on [GitHub](https://github.com/covid19-us/covid19-us.github.io).
 
 **WARNING: I am not an epidemiologist! Please do not use this model to make important decisions.**<br/>
 
@@ -159,7 +159,5 @@ Data collected from [covidtracking.com](https://covidtracking.com/). Model inspi
 To estimate the number of infections in a state, we run 500 stochastic simulations starting from a single infected individual, and stop each simulation when it reaches the number of deaths currently recorded in that state. 
 
 Infections are simulated using a poisson branching process, where the serial interval (time for one individual to infect another) is drawn from a Log-Normal distribution (mean: 4.7 days, std: 2.9 days). The onset-to-death interval for each individual is drawn from a Gamma distribution (mean: 15 days, std: 6.9 days). When R<sub>0</sub> and CFR are not provided, we marginalise over possible values.
-
-Source code on [GitHub](https://github.com/covid19-us/covid19-us.github.io)
 
 Contact: _lbh (at) mit (dot) edu_
