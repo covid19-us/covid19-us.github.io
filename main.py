@@ -136,8 +136,8 @@ if __name__ == "__main__":
 
     # Make predictions on the covidtracking data
     allstats = {}
-    for R0 in [1.5, 2, 2.5, 3, None]:
-        for CFR in [0.005, 0.01, 0.02, 0.03, None]:
+    for R0 in [None, 1.5, 2, 2.5, 3, ]:
+        for CFR in [None, 0.005, 0.01, 0.02, 0.03]:
             for norm_by_population in [False, True]:
                 stats = {}
                 for state in US_STATE_POPULATIONS.keys():
@@ -186,7 +186,12 @@ if __name__ == "__main__":
                             # 'sortorder': 0,
                             'positive': 0,
                         }
-                stats_sorted = sorted(stats.items(), key=lambda x: -x[1].get('median', 0))
+                if R0 is None and CFR is None:
+                    stats_sorted = sorted(stats.items(), key=lambda x: -x[1].get('median', 0))
+                else:
+                    state_order = [x[0] for x in allstats["None,None,{}".format(norm_by_population)]]
+                    stats_sorted = sorted(stats.items(), key=lambda x: state_order.index(x[0]))
+
                 allstats["{},{},{}".format(R0, CFR, norm_by_population)] = stats_sorted
 
     # Update webpage
