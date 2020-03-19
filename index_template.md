@@ -21,17 +21,19 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
 <div id="chart" style="width:100%;height:22rem;display:inline-block;"></div><br/>
 
 <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left; padding-right:20px">
-    <input type="checkbox" id="onlydeaths"/> <label for="onlydeaths">Hide states with no recorded deaths</label>
+    <input type="checkbox" id="onlydeaths"/> <label for="onlydeaths">Hide states with no deaths</label>
+</div>
+<div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left; padding-right:20px">
+    <input type="checkbox" id="normbypopulation" checked/> <label for="normbypopulation">Normalize by population</label>
 </div>
 <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left;">
-    <input type="checkbox" id="chooseR0"> R<sub>0</sub> <input type="range" min="0" max="3" value="1" id="R0" disabled>
+    <input type="checkbox" id="chooseR0"> <label for="chooseR0">R<sub>0</sub></label> <input type="range" min="0" max="3" value="1" id="R0" style="width:80px" disabled>
     <div id="R0text" style="width:80px; text-align:center; margin-right:20px; display:inline-block; background:lightgray; padding:3px;"></div>
 </div>
 <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left;">
-    <input type="checkbox" id="chooseCFR"> CFR <input type="range" min="0" max="3" value="1" id="CFR" disabled>
+    <input type="checkbox" id="chooseCFR"> <label for="chooseCFR">CFR</label> <input type="range" min="0" max="3" value="1" id="CFR" style="width:80px" disabled>
     <div id="CFRtext" style="width:80px; text-align:center; margin-right:20px; display:inline-block; background:lightgray; padding:3px;"></div>
 </div>
-<br/><i>(hover cursor over graph for numerical values)</i>
 </div>
 
 <script>
@@ -46,6 +48,7 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
     })
     document.getElementById("CFR").addEventListener('input', (event) => {refresh()})
     document.getElementById("onlydeaths").addEventListener('change', (event) => {refresh()})
+    document.getElementById("normbypopulation").addEventListener('change', (event) => {refresh()})
 
     var allstats = {{ stats }};
     col = 'blue';
@@ -64,8 +67,9 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
             CFR=CFRs[document.getElementById("CFR").value];
             document.getElementById("CFRtext").innerHTML=CFR*100 + "%"
         }
-        
-        var stats = allstats[R0 + "," + CFR];
+        normbypopulation = document.getElementById("normbypopulation").checked ? "True" : "False"
+
+        var stats = allstats[R0 + "," + CFR + "," + normbypopulation];
         if(document.getElementById("onlydeaths").checked) {
             _stats = []
             for(var i=0; i<stats.length; i++) {
@@ -75,7 +79,8 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
             }
             stats = _stats
         }
-        console.log("R0=", R0, "CFR=", CFR)
+        
+        console.log("R0=", R0, "CFR=", CFR, "normbypopulation=", normbypopulation)
         var data = [
             {
                 name: 'Estimated cases',
@@ -127,10 +132,10 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
                 showzero: false,
                 fixedrange: true
             },
-            margin: {t:50, l:50, r:0, b:50},
+            margin: {t:50, l:60, r:0, b:50},
             yaxis: {
                 type: 'log',
-                range: [-0.1, 5.2],
+                //range: normbypopulation=="True" ? undefined : [-0.1, 5.2],
                 showgrid: false,
                 showline: false,
                 showzero: false,
@@ -144,6 +149,12 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
             },
             shapes: shapes
         };
+        if(normbypopulation == "True") {
+            layout.yaxis.title = "Cases per 100,000 people";
+            layout.yaxis.titlefont = {size:'0.8em'}
+        } else {
+            // layout.yaxis.title = "Cases";
+        }
         Plotly.newPlot('chart', data, layout/*,  {staticPlot: true}*/);
     }
 
@@ -152,9 +163,13 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
 
 </script>
 
+<div style="padding-top:15px">
+Hover/click on any datapoint in graph above to see its numerical value. You can also use the sliders to set the R<sub>0</sub> (average number of people each person infects) and CFR (percentage of cases which are fatal) used by the model. If R<sub>0</sub> and CFR are not provided, we marginalise over all possible values.
+</div>
+
 ## Model
 To estimate the number of infections in a state, we run 500 stochastic simulations starting from a single infected individual, and stop each simulation when it reaches the number of deaths currently recorded in that state. Simulations are discarded if they predict fewer infections than the number of confirmed cases.
 
-Infections are simulated using a poisson branching process, where the serial interval (time for one individual to infect another) is drawn from a Log-Normal distribution (mean: 4.7 days, std: 2.9 days). The onset-to-death interval for each individual is drawn from a Gamma distribution (mean: 15 days, std: 6.9 days). When R<sub>0</sub> and CFR are not provided, we marginalise over possible values.
+Infections are simulated using a poisson branching process, where the serial interval (time for one individual to infect another) is drawn from a Log-Normal distribution (mean: 4.7 days, std: 2.9 days). The onset-to-death interval for each individual is drawn from a Gamma distribution (mean: 15 days, std: 6.9 days).
 
 Contact: _lbh (at) mit (dot) edu_

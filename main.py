@@ -12,6 +12,9 @@ from matplotlib import pyplot as plt
 n_simulations = 500
 step = 1  # timestep (days)
 
+US_STATE_POPULATIONS = {"AL": 4903185, "AK": 731545, "AZ": 7278717, "AR": 3017804, "CA": 39512223, "CO": 5758736, "CT": 3565287, "DE": 973764, "DC": 705749, "FL": 21477737, "GA": 10617423, "HI": 1415872, "ID": 1787065, "IL": 12671821, "IN": 6732219, "IA": 3155070, "KS": 2913314, "KY": 4467673, "LA": 4648794, "ME": 1344212, "MD": 6045680, "MA": 6892503, "MI": 9986857, "MN": 5639632, "MS": 2976149,
+                        "MO": 6137428, "MT": 1068778, "NE": 1934408, "NV": 3080156, "NH": 1359711, "NJ": 8882190, "NM": 2096829, "NY": 19453561, "NC": 10488084, "ND": 762062, "OH": 11689100, "OK": 3956971, "OR": 4217737, "PA": 12801989, "RI": 1059361, "SC": 5148714, "SD": 884659, "TN": 6829174, "TX": 28995881, "UT": 3205958, "VT": 623989, "VA": 8535519, "WA": 7614893, "WV": 1792147, "WI": 5822434, "WY": 578759}
+
 
 def sim_days(R0=2.5, CFR=0.02):
     """
@@ -135,50 +138,56 @@ if __name__ == "__main__":
     allstats = {}
     for R0 in [1.5, 2, 2.5, 3, None]:
         for CFR in [0.005, 0.01, 0.02, 0.03, None]:
-            stats = {}
-            for state in states:
-                allrecords = [d for d in data if d['state'] == state]
-                allrecords = sorted(allrecords, key=get_positive)
-                # records = [d for d in allrecords
-                #            if d.get('death', None) is not None
-                #            and d.get('death', None) != 0]
+            for norm_by_population in [False, True]:
+                stats = {}
+                for state in US_STATE_POPULATIONS.keys():
+                    pop = US_STATE_POPULATIONS[state]
+                    denom = pop/100000 if norm_by_population else 1
 
-                # if len(records) > 0:
-                if get_positive(allrecords[-1]) > 0:
-                    if 'death' in allrecords[-1] and allrecords[-1]['death'] is not None:
-                        deaths = allrecords[-1]['death']
+                    allrecords = [d for d in data if d['state'] == state]
+                    allrecords = sorted(allrecords, key=get_positive)
+
+                    if get_positive(allrecords[-1]) > 0:
+                        if 'death' in allrecords[-1] and allrecords[-1]['death'] is not None:
+                            deaths = allrecords[-1]['death']
+                        else:
+                            deaths = 0
+                        predictions = sorted(
+                            sample_n_infected(deaths, R0=R0, CFR=CFR))
+                        predictions = [p for p in predictions if p >=
+                                       get_positive(allrecords[-1])]
+
+                        if len(predictions) == 0:  # All simulations returned not enough cases
+                            stats[state] = {
+                                # 'sortorder': (-get_positive(allrecords[-1])/denom, -deaths/denom, state),
+                                'positive': get_positive(allrecords[-1])/denom,
+                                'deaths': deaths/denom
+                            }
+                        else:
+                            print("{}: [{}, {}, {}, {}]".format(
+                                state,
+                                predictions[int(len(predictions)*0.025)],
+                                predictions[int(len(predictions)*0.25)],
+                                predictions[int(len(predictions)*0.75)],
+                                predictions[int(len(predictions)*0.975)]))
+
+                            stats[state] = {
+                                # 'sortorder': (-get_positive(allrecords[-1])/denom, -deaths/denom, state),
+                                'positive': get_positive(allrecords[-1])/denom,
+                                'deaths': deaths/denom,
+                                'lower95': predictions[int(len(predictions)*0.025)]/denom,
+                                'lower50': predictions[int(len(predictions)*0.25)]/denom,
+                                'median': predictions[int(len(predictions)*0.50)]/denom,
+                                'upper50': predictions[int(len(predictions)*0.75)]/denom,
+                                'upper95': predictions[int(len(predictions)*0.975)]/denom
+                            }
                     else:
-                        deaths = 0
-                    predictions = sorted(
-                        sample_n_infected(deaths, R0=R0, CFR=CFR))
-                    predictions = [p for p in predictions if p >=
-                                   get_positive(allrecords[-1])]
-
-                    print("{}: [{}, {}, {}, {}]".format(
-                        state,
-                        predictions[int(len(predictions)*0.025)],
-                        predictions[int(len(predictions)*0.25)],
-                        predictions[int(len(predictions)*0.75)],
-                        predictions[int(len(predictions)*0.975)]))
-
-                    stats[state] = {
-                        'positive': get_positive(allrecords[-1]),
-                        'deaths': deaths,
-                        'lower95': predictions[int(len(predictions)*0.025)],
-                        'lower50': predictions[int(len(predictions)*0.25)],
-                        'median': predictions[int(len(predictions)*0.50)],
-                        'upper50': predictions[int(len(predictions)*0.75)],
-                        'upper95': predictions[int(len(predictions)*0.975)]
-                    }
-                else:
-                    stats[state] = {
-                        'positive': 0,
-                    }
-            stats_sorted = sorted(stats.items(), key=lambda x:
-                                  (x[1].get('deaths', 0),
-                                   x[1].get('positive', 0), x[0]),
-                                  reverse=True)
-            allstats["{},{}".format(R0, CFR)] = stats_sorted
+                        stats[state] = {
+                            # 'sortorder': 0,
+                            'positive': 0,
+                        }
+                stats_sorted = sorted(stats.items(), key=lambda x: -x[1].get('median', 0))
+                allstats["{},{},{}".format(R0, CFR, norm_by_population)] = stats_sorted
 
     # Update webpage
     dateint = max(x['date'] for x in allrecords)
