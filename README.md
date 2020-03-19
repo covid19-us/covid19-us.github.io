@@ -1,6 +1,6 @@
 # covid19-us.github.io
-Webpage: http://covid19-us.github.io
-Model source code: [main.py](https://github.com/covid19-us/covid19-us.github.io/blob/master/main.py)
+- Webpage: http://covid19-us.github.io
+- Model source code: [main.py](https://github.com/covid19-us/covid19-us.github.io/blob/master/main.py)
 
 This model estimates the total number of COVID-19 infections in each US state, based on the number of deaths (as reported on covidtracking.com). The simulation model is the same as [Jombart et al.](https://www.medrxiv.org/content/10.1101/2020.03.10.20033761v1.full.pdf), but for prediction we use a different strategy. 
 
