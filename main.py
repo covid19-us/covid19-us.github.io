@@ -136,35 +136,38 @@ if __name__ == "__main__":
             for state in states:
                 allrecords = [d for d in data if d['state'] == state]
                 allrecords = sorted(allrecords, key=get_positive)
-                records = [d for d in allrecords
-                           if d.get('death', None) is not None
-                           and d.get('death', None) != 0]
+                # records = [d for d in allrecords
+                #            if d.get('death', None) is not None
+                #            and d.get('death', None) != 0]
 
-                if len(records) > 0:
-                    predictions = sorted(sample_n_infected(
-                        records[-1]['death'], R0=R0, CFR=CFR))
-                    # predictions = [p for p in predictions if p >= get_positive(allrecords[-1])]
-
-                    print("{}: [{}, {}, {}, {}]".format(
-                        state,
-                        predictions[int(len(predictions)*0.025)],
-                        predictions[int(len(predictions)*0.25)],
-                        predictions[int(len(predictions)*0.75)],
-                        predictions[int(len(predictions)*0.975)]))
-
-                    stats[state] = {
-                        'positive': get_positive(allrecords[-1]),
-                        'deaths': records[-1]['death'],
-                        'lower95': predictions[int(len(predictions)*0.025)],
-                        'lower50': predictions[int(len(predictions)*0.25)],
-                        'median': predictions[int(len(predictions)*0.50)],
-                        'upper50': predictions[int(len(predictions)*0.75)],
-                        'upper95': predictions[int(len(predictions)*0.975)]
-                    }
+                # if len(records) > 0:
+                if 'death' in allrecords[-1] and allrecords[-1]['death'] is not None:
+                    deaths = allrecords[-1]['death']
                 else:
-                    stats[state] = {
-                        'positive': get_positive(allrecords[-1]),
-                    }
+                    deaths = 0
+                predictions = sorted(sample_n_infected(deaths, R0=R0, CFR=CFR))
+                predictions = [p for p in predictions if p >= get_positive(allrecords[-1])]
+
+                print("{}: [{}, {}, {}, {}]".format(
+                    state,
+                    predictions[int(len(predictions)*0.025)],
+                    predictions[int(len(predictions)*0.25)],
+                    predictions[int(len(predictions)*0.75)],
+                    predictions[int(len(predictions)*0.975)]))
+
+                stats[state] = {
+                    'positive': get_positive(allrecords[-1]),
+                    'deaths': deaths,
+                    'lower95': predictions[int(len(predictions)*0.025)],
+                    'lower50': predictions[int(len(predictions)*0.25)],
+                    'median': predictions[int(len(predictions)*0.50)],
+                    'upper50': predictions[int(len(predictions)*0.75)],
+                    'upper95': predictions[int(len(predictions)*0.975)]
+                }
+                # else:
+                #     stats[state] = {
+                #         'positive': get_positive(allrecords[-1]),
+                #     }
             stats_sorted = sorted(stats.items(), key=lambda x: (
                 x[1]['positive'], x[0]), reverse=True)
             allstats["{},{}".format(R0, CFR)] = stats_sorted
