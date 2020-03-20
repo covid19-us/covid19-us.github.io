@@ -13,16 +13,34 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
 <script>
     var R0s = [1.5, 2, 2.5, 3];
     var CFRs = [0.005, 0.01, 0.02, 0.03];
+    var regions = {
+        west: ["WA", "OR", "MT", "ID", "WY", "NV", "UT", "CO", "CA", "AZ", "NM"],
+        midwest: ["ND", "MN", "SD", "IA", "NE", "KS", "MO", "WI", "IL", "IN", "MI", "OH"],
+        south: ["TX", "OK", "AR", "LA", "MS", "TN", "KY", "AL", "FL", "GA", "SC", "NC", "VA", "WV", "DC", "MD", "DE"],
+        northeast: ["PA", "NJ", "NY", "CT", "RI", "MA", "VT", "NH", "ME"]
+    }
 </script>
+
 
 <div style="text-align:center">
 <!-- <input type="checkbox" id="chooseR0"> Reproduction Number (R<sub>0</sub>) <input type="range" min="0" max="3" value="1" id="R0" disabled> -->
 
 <div id="chart" style="width:100%;height:22rem;display:inline-block;"></div><br/>
 
-<div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left; padding-right:20px">
+<!-- <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left; padding-right:20px">
     <input type="checkbox" id="onlydeaths"/> <label for="onlydeaths">Hide states with no deaths</label>
+</div> -->
+<div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left; padding-right:20px">
+    Region: 
+    <select id="region">
+    <option value="all">All states</option>
+    <option value="northeast">Northeast</option>
+    <option value="midwest">Midwest</option>
+    <option value="south">South</option>
+    <option value="west">West</option>
+    </select>
 </div>
+
 <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left; padding-right:20px">
     <input type="checkbox" id="normbypopulation" checked/> <label for="normbypopulation">Normalize by population</label>
 </div>
@@ -47,7 +65,8 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
         refresh()
     })
     document.getElementById("CFR").addEventListener('input', (event) => {refresh()})
-    document.getElementById("onlydeaths").addEventListener('change', (event) => {refresh()})
+    // document.getElementById("onlydeaths").addEventListener('change', (event) => {refresh()})
+    document.getElementById("region").addEventListener('change', (event) => {refresh()})
     document.getElementById("normbypopulation").addEventListener('change', (event) => {refresh()})
 
     var allstats = {{ stats }};
@@ -70,15 +89,25 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
         normbypopulation = document.getElementById("normbypopulation").checked ? "True" : "False"
 
         var stats = allstats[R0 + "," + CFR + "," + normbypopulation];
-        if(document.getElementById("onlydeaths").checked) {
+        region = document.getElementById("region").value;
+        if(region != "all") {
             _stats = []
             for(var i=0; i<stats.length; i++) {
-                if(stats[i][1]['deaths']>0) {
+                if(regions[region].indexOf(stats[i][0])!=-1) {
                     _stats.push(stats[i])
                 }
             }
             stats = _stats
         }
+        // if(document.getElementById("onlydeaths").checked) {
+        //     _stats = []
+        //     for(var i=0; i<stats.length; i++) {
+        //         if(stats[i][1]['deaths']>0) {
+        //             _stats.push(stats[i])
+        //         }
+        //     }
+        //     stats = _stats
+        // }
         
         console.log("R0=", R0, "CFR=", CFR, "normbypopulation=", normbypopulation)
         var data = [
@@ -134,8 +163,8 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
             },
             margin: {t:50, l:60, r:0, b:50},
             yaxis: {
+                hoverformat: '.2r',
                 type: 'log',
-                //range: normbypopulation=="True" ? undefined : [-0.1, 5.2],
                 showgrid: false,
                 showline: false,
                 showzero: false,
@@ -158,7 +187,11 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
         Plotly.newPlot('chart', data, layout/*,  {staticPlot: true}*/);
     }
 
-    document.getElementById("onlydeaths").checked = window.screen.width<1000;
+    if(window.screen.width<1000) {
+        // document.getElementById("onlydeaths").checked = true
+        document.getElementById("region").value = "west";
+    }
+    
     refresh();
 
 </script>
