@@ -6,7 +6,7 @@ Because tests for COVID-19 are lagging in the US, confirmed cases provide only a
 
 Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jombart et al. ([paper](https://www.medrxiv.org/content/10.1101/2020.03.10.20033761v1.full.pdf), [interactive](https://cmmid.github.io/visualisations/inferring-covid19-cases-from-deaths)). Source code is on [GitHub](https://github.com/covid19-us/covid19-us.github.io). Best viewed on desktop.
 
-**WARNING: I am not an epidemiologist! Please do not use this model to make important decisions.**<br/>
+**WARNING: I am not an epidemiologist, please do not use this model to make important decisions.**<br/>
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
@@ -41,10 +41,12 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
     <option value="west">West</option>
     </select>
 </div>
-
 <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left; padding-right:20px">
-    <input type="checkbox" id="normbypopulation" checked/> <label for="normbypopulation">Scale by population</label>
+    <input type="checkbox" id="normbypopulation" /> <label for="normbypopulation">Scale by population</label>
 </div>
+<div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left; padding-right:20px">
+    <input type="checkbox" id="logscale" checked/> <label for="logscale">Log scale</label>
+</div><br/>
 <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left;">
     <input type="checkbox" id="chooseR0"> <label for="chooseR0">R<sub>0</sub></label> <input type="range" min="0" max="3" value="1" id="R0" style="width:80px" disabled>
     <div id="R0text" style="width:80px; text-align:center; margin-right:20px; display:inline-block; background:lightgray; padding:3px;"></div>
@@ -69,9 +71,10 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
     // document.getElementById("onlydeaths").addEventListener('change', (event) => {refresh()})
     document.getElementById("region").addEventListener('change', (event) => {refresh()})
     document.getElementById("normbypopulation").addEventListener('change', (event) => {refresh()})
+    document.getElementById("logscale").addEventListener('change', (event) => {refresh()})
 
     var allstats = {{ stats }};
-    col = 'blue';
+    col = '#1f77b4';
     function refresh(){
         if(document.getElementById("R0").disabled) {
             R0="None"
@@ -87,9 +90,10 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
             CFR=CFRs[document.getElementById("CFR").value];
             document.getElementById("CFRtext").innerHTML=CFR*100 + "%"
         }
-        normbypopulation = document.getElementById("normbypopulation").checked ? "True" : "False"
+        normbypopulation = document.getElementById("normbypopulation").checked
+        logscale = document.getElementById("logscale").checked
 
-        var stats = allstats[R0 + "," + CFR + "," + normbypopulation];
+        var stats = allstats[R0 + "," + CFR + "," + (normbypopulation ? "True" : "False")];
         region = document.getElementById("region").value;
         if(region == "all") {
             
@@ -149,13 +153,13 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
                     {layer:'below', type:'line', line:{width:3, color:col}, 
                     x0: j+1, x1: j+1, y0: stats[j][1]['lower50'], y1: stats[j][1]['upper50'] });
                 shapes.push(
-                    {layer:'below', type:'line', line:{width:1, color:col}, 
+                    {layer:'below', type:'line', line:{width:1, color:col, opacity:0.3}, 
                     x0: j+1, x1: j+1, y0: stats[j][1]['lower95'], y1: stats[j][1]['upper95'] });
             }
         }
         layout = {
             hovermode: 'closest',
-            title: 'Cases by state <i>(updated {{ date }})</i>',
+            title: 'COVID-19 by state <i>(updated {{ date }})</i>',
             xaxis: {
                 tickvals: Array(stats.length).fill(1).map((v, j) => j+1),
                 ticktext: Array(stats.length).fill(1).map((v, j) => stats[j][0]),
@@ -166,9 +170,9 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
                 showzero: false,
                 fixedrange: true
             },
-            margin: {t:50, l:50, r:0, b:50},
+            margin: {t:50, l:40, r:0, b:50},
             yaxis: {
-                type: 'log',
+                // type: 'log',
                 showgrid: false,
                 showline: false,
                 showzero: false,
@@ -181,23 +185,50 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
             legend: {
                 x: 1,
                 xanchor: 'right',
-                y: 1
+                y: 1,
+                bordercolor: 'black',
+                borderwidth: 1
             },
             shapes: shapes
         };
-        if(normbypopulation == "True") {
+        if(normbypopulation) {
             layout.yaxis.title = "Cases per 100,000 people";
-            layout.margin.l += 20;
+            layout.margin.l += 40;
             layout.yaxis.titlefont = {size:'0.8em'};
-            layout.yaxis.range = [-2.5, 4.5];
-            layout.yaxis.hoverformat = '.2r';
-            layout.yaxis.tickformat = 'f';
+            if(logscale) {
+                layout.yaxis.type = "log";
+                layout.yaxis.range = [-2.5, 4.5];
+                layout.yaxis.hoverformat = '.2r';
+                layout.yaxis.tickformat = '.1r';
+                layout.yaxis.title += " (Log scale)"
+            } else {
+                // layout.yaxis.range = [0, 30];
+                // layout.yaxis.range = [0, 1e4];
+                layout.yaxis.range = [0, stats[1][1]['upper50']*1.1];
+                layout.yaxis.hoverformat = '.2r';
+                layout.yaxis.tickformat = '.1r';
+            }
+            
         } else {
-            layout.yaxis.range = [-0.2, 6.5];
-            layout.yaxis.hoverformat = '.2s';
-            layout.yaxis.tickformat = 's';
-            // layout.yaxis.title = "Cases";
+            layout.yaxis.title = "Cases";
+            layout.margin.l += 40;
+            if(logscale) {
+                layout.yaxis.type = "log";
+                layout.yaxis.range = [-0.2, 6.5];
+                layout.yaxis.hoverformat = '.2s';
+                layout.yaxis.tickformat = 's';
+                layout.yaxis.title += " (Log scale)"
+            } else {
+                // layout.yaxis.range = [0, 5005];
+                // layout.yaxis.range = [0, 1e5];
+                layout.yaxis.range = [0, stats[1][1]['upper50']*1.1];
+                layout.yaxis.hoverformat = 'd';
+                layout.yaxis.tickformat = 'd';
+            }
+
+            
         }
+
         Plotly.newPlot('chart', data, layout/*,  {staticPlot: true}*/);
     }
 
