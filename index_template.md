@@ -155,7 +155,7 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
         }
         layout = {
             hovermode: 'closest',
-            title: 'Cases by state <i>({{ date }})</i>',
+            title: 'Cases by state <i>(updated {{ date }})</i>',
             xaxis: {
                 tickvals: Array(stats.length).fill(1).map((v, j) => j+1),
                 ticktext: Array(stats.length).fill(1).map((v, j) => stats[j][0]),
@@ -166,7 +166,7 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
                 showzero: false,
                 fixedrange: true
             },
-            margin: {t:50, l:70, r:0, b:50},
+            margin: {t:50, l:50, r:0, b:50},
             yaxis: {
                 type: 'log',
                 showgrid: false,
@@ -187,6 +187,7 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
         };
         if(normbypopulation == "True") {
             layout.yaxis.title = "Cases per 100,000 people";
+            layout.margin.l += 20;
             layout.yaxis.titlefont = {size:'0.8em'};
             layout.yaxis.range = [-2.5, 4.5];
             layout.yaxis.hoverformat = '.2r';
