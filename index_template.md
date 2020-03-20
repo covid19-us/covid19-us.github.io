@@ -25,24 +25,25 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
 <div style="text-align:center">
 <!-- <input type="checkbox" id="chooseR0"> Reproduction Number (R<sub>0</sub>) <input type="range" min="0" max="3" value="1" id="R0" disabled> -->
 
-<div id="chart" style="width:100%;height:22rem;display:inline-block;"></div><br/>
+<div id="chart" style="width:100%;max-width:600px;height:22rem;display:inline-block;"></div><br/>
 
 <!-- <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left; padding-right:20px">
     <input type="checkbox" id="onlydeaths"/> <label for="onlydeaths">Hide states with no deaths</label>
 </div> -->
 <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left; padding-right:20px">
-    Region: 
+    Filter states: 
     <select id="region">
     <option value="all">All states</option>
-    <option value="northeast">Northeast</option>
+    <option value="most" selected>Most affected</option>
     <option value="midwest">Midwest</option>
+    <option value="northeast">Northeast</option>
     <option value="south">South</option>
     <option value="west">West</option>
     </select>
 </div>
 
 <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left; padding-right:20px">
-    <input type="checkbox" id="normbypopulation" checked/> <label for="normbypopulation">Normalize by population</label>
+    <input type="checkbox" id="normbypopulation" checked/> <label for="normbypopulation">Scale by population</label>
 </div>
 <div style="display:inline-block; padding-top:10px; padding-bottom:10px; text-align:left;">
     <input type="checkbox" id="chooseR0"> <label for="chooseR0">R<sub>0</sub></label> <input type="range" min="0" max="3" value="1" id="R0" style="width:80px" disabled>
@@ -90,7 +91,11 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
 
         var stats = allstats[R0 + "," + CFR + "," + normbypopulation];
         region = document.getElementById("region").value;
-        if(region != "all") {
+        if(region == "all") {
+            
+        } else if(region=="most") {
+            stats = stats.slice(0, 15)
+        } else {
             _stats = []
             for(var i=0; i<stats.length; i++) {
                 if(regions[region].indexOf(stats[i][0])!=-1) {
@@ -150,7 +155,7 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
         }
         layout = {
             hovermode: 'closest',
-            title: 'Infections by state <i>({{ date }})</i>',
+            title: 'Cases by state <i>({{ date }})</i>',
             xaxis: {
                 tickvals: Array(stats.length).fill(1).map((v, j) => j+1),
                 ticktext: Array(stats.length).fill(1).map((v, j) => stats[j][0]),
@@ -161,15 +166,17 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
                 showzero: false,
                 fixedrange: true
             },
-            margin: {t:50, l:60, r:0, b:50},
+            margin: {t:50, l:70, r:0, b:50},
             yaxis: {
-                hoverformat: '.2r',
                 type: 'log',
                 showgrid: false,
                 showline: false,
                 showzero: false,
                 ticklen: 10,
-                fixedrange: true
+                fixedrange: true, 
+                // range: [...],
+                // hoverformat: '.2s',
+                // tickformat: 's',
             },
             legend: {
                 x: 1,
@@ -180,17 +187,23 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
         };
         if(normbypopulation == "True") {
             layout.yaxis.title = "Cases per 100,000 people";
-            layout.yaxis.titlefont = {size:'0.8em'}
+            layout.yaxis.titlefont = {size:'0.8em'};
+            layout.yaxis.range = [-2.5, 4.5];
+            layout.yaxis.hoverformat = '.2r';
+            layout.yaxis.tickformat = 'f';
         } else {
+            layout.yaxis.range = [-0.2, 6.5];
+            layout.yaxis.hoverformat = '.2s';
+            layout.yaxis.tickformat = 's';
             // layout.yaxis.title = "Cases";
         }
         Plotly.newPlot('chart', data, layout/*,  {staticPlot: true}*/);
     }
 
-    if(window.screen.width<1000) {
+    // if(window.screen.width<1000) {
         // document.getElementById("onlydeaths").checked = true
-        document.getElementById("region").value = "west";
-    }
+        // document.getElementById("region").value = "west";
+    // }
     
     refresh();
 
