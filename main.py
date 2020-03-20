@@ -134,6 +134,15 @@ if __name__ == "__main__":
         else:
             return 0
 
+    def get_negative(d):
+        """
+        Gets the number of negative tests for a given record from the covidtracking data
+        """
+        if 'negative' in d and d['negative'] is not None:
+            return d['negative']
+        else:
+            return 0
+
     # Make predictions on the covidtracking data
     allstats = {}
     for R0 in [None, 1.5, 2, 2.5, 3, ]:
@@ -161,6 +170,7 @@ if __name__ == "__main__":
                             stats[state] = {
                                 # 'sortorder': (-get_positive(allrecords[-1])/denom, -deaths/denom, state),
                                 'positive': get_positive(allrecords[-1])/denom,
+                                'negative': get_positive(allrecords[-1])/denom,
                                 'deaths': deaths/denom
                             }
                         else:
@@ -174,17 +184,21 @@ if __name__ == "__main__":
                             stats[state] = {
                                 # 'sortorder': (-get_positive(allrecords[-1])/denom, -deaths/denom, state),
                                 'positive': get_positive(allrecords[-1])/denom,
+                                'negative': get_positive(allrecords[-1])/denom,
                                 'deaths': deaths/denom,
                                 'lower95': predictions[int(len(predictions)*0.025)]/denom,
+                                'lower90': predictions[int(len(predictions)*0.05)]/denom,
                                 'lower50': predictions[int(len(predictions)*0.25)]/denom,
                                 'median': predictions[int(len(predictions)*0.50)]/denom,
                                 'upper50': predictions[int(len(predictions)*0.75)]/denom,
+                                'upper90': predictions[int(len(predictions)*0.95)]/denom,
                                 'upper95': predictions[int(len(predictions)*0.975)]/denom
                             }
                     else:
                         stats[state] = {
                             # 'sortorder': 0,
                             'positive': 0,
+                            'negative': 0,
                         }
                 if R0 is None and CFR is None:
                     stats_sorted = sorted(stats.items(), key=lambda x: -x[1].get('median', 0))

@@ -2,14 +2,23 @@
 layout: default
 ---
 
-Because tests for COVID-19 are lagging in the US, confirmed cases provide only a loose lower bound on the number of infected people. This page uses a model to estimate the total number of infections in each state, based on the number of deaths. _Updates daily._
+Because tests for COVID-19 are lagging in the US, confirmed cases provide only a loose lower bound on the number of infected people. This page estimates the total number of infections in each state, based on the number of deaths. _Updates daily._
 
-Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jombart et al. ([paper](https://www.medrxiv.org/content/10.1101/2020.03.10.20033761v1.full.pdf), [interactive](https://cmmid.github.io/visualisations/inferring-covid19-cases-from-deaths)). Source code is on [GitHub](https://github.com/covid19-us/covid19-us.github.io). Best viewed on desktop.
+The model is inspired by the paper _Inferring the number of COVID-19 cases from recently reported deaths_ ([Jombart et al.](https://www.medrxiv.org/content/10.1101/2020.03.10.20033761v1.full.pdf), [interactive](https://cmmid.github.io/visualisations/inferring-covid19-cases-from-deaths)) which estimates that, by the time a death occurs,
+roughly "hundreds to thousands" of cases are likely to be present in a population.
 
-**WARNING: I am not an epidemiologist, please do not use this model to make important decisions.**<br/>
+Data from [covidtracking.com](https://covidtracking.com/). Source code is on [GitHub](https://github.com/covid19-us/covid19-us.github.io). Best viewed on desktop.
+
+<div style="text-align:center; font-weight: bold; padding-bottom:15px">
+WARNING: I am not an epidemiologist, please do not use this model to make precise predictions!
+</div>
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
+<style type="text/css">
+.stat {
+    font-weight: bold;
+}
+</style>
 <script>
     var R0s = [1.5, 2, 2.5, 3];
     var CFRs = [0.005, 0.01, 0.02, 0.03];
@@ -124,6 +133,13 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
                 name: 'Estimated cases',
                 x: Array(stats.length).fill(1).map((v, j) => j+1),
                 y: Array(stats.length).fill(1).map((v, j) => stats[j][1]['median']),
+                hoverinfo:'text',
+                text: Array(stats.length).fill(1).map((v, j) => "(" + stats[j][0] + ", " + (
+                    stats[j][1]['lower95'] > 1000 ?
+                        (parseFloat((stats[j][1]['lower95']).toPrecision(2))/1000 + "k-" + parseFloat((stats[j][1]['upper95']).toPrecision(2))/1000 + "k)") :
+                        (parseFloat((stats[j][1]['lower95']).toPrecision(2)) + "-" + parseFloat((stats[j][1]['upper95']).toPrecision(2)) + ")")
+                    )
+                ),
                 marker: {
                     color: col,
                     opacity: 0
@@ -240,14 +256,59 @@ Data from [covidtracking.com](https://covidtracking.com/). Model inspired by Jom
     refresh();
 
 </script>
-
-<div style="padding-top:15px">
-Hover/click on any datapoint in graph above to see its numerical value. You can also use the sliders to set the R<sub>0</sub> (average number of people each person infects) and CFR (percentage of cases which are fatal) used by the model. If R<sub>0</sub> and CFR are not provided, we marginalise over all possible values.
+<div style="padding-top:15px; padding-bottom:15px;">
+<i>You can hover or click any point on the graph above to see its numerical value.</i>
 </div>
+
+The model is fairly sensitive to the choice of CFR (_Case Fataility Rate_: the proportion of cases which are fatal) and R<sub>0</sub> (_Reproduction Number_: the average number of people each person infects):
+- When the CFR is high, we expect _fewer_ infections by the time of the first death (because deaths are more frequent)
+- When the R<sub>0</sub> is high, we expect _more_ infections by the time of the first death (because the virus spreads more quickly)
+
+By default, if R<sub>0</sub> and CFR are not provided, we marginalise over all values to avoid making predictions which are over-confident. 
+
+## Differences in testing between states
+<p>
+This chart highlights the danger of relying on <i>confirmed cases</i> to estimate the prevalence of COVID-19 in a given state.
+</p>
+
+<p>For example, the state of Georgia (population ~10 million) has so far suffered <span id="georgiadeaths" class="stat"></span> deaths with <span id="georgiacases" class="stat"></span> confirmed cases (total tested: <span id="georgiatotal" class="stat"></span>). By comparison, the state of New York (population ~20 million) has suffered <span id="newyorkdeaths" class="stat"></span> deaths with <span id="newyorkcases" class="stat"></span> confirmed cases (total tested: <span id="newyorktotal" class="stat"></span>).
+</p>
+
+<p>Comparing only the number of confirmed cases, it would be easy to assume that the prevalence of COVID-19 is <span id="newyorkgeorgiafraction"></span>x larger in New York than in Georgia. However, taking into account fatailities and population size, this model predicts similar prevalence in these two states: roughly <span id="georgiapopulationlower" class="stat"></span>-<span id="georgiapopulationupper" class="stat"></span> cases per 100,000 people in Georgia, and  <span id="newyorkpopulationlower" class="stat"></span>-<span id="newyorkpopulationupper" class="stat"></span> cases per 100,000 people in New York.
+</p>
+
+<script>
+    var stats = allstats["None,None,False"];
+    var stats_by_state = {};
+    for(var i=0; i<stats.length; i++) {
+        stats_by_state[stats[i][0]] = stats[i][1];
+    }
+    var stats_population = allstats["None,None,True"];
+    var stats_population_by_state = {};
+    for(var i=0; i<stats_population.length; i++) {
+        stats_population_by_state[stats_population[i][0]] = stats_population[i][1];
+    }
+    document.getElementById("georgiacases").innerHTML=stats_by_state["GA"]["positive"];
+    document.getElementById("georgiadeaths").innerHTML=stats_by_state["GA"]["deaths"];
+    document.getElementById("georgiatotal").innerHTML=stats_by_state["GA"]["positive"] + stats_by_state["GA"]["negative"];
+    document.getElementById("newyorkcases").innerHTML=stats_by_state["NY"]["positive"];
+    document.getElementById("newyorkdeaths").innerHTML=stats_by_state["NY"]["deaths"];
+    document.getElementById("newyorktotal").innerHTML=stats_by_state["NY"]["positive"] + stats_by_state["NY"]["negative"];
+
+    document.getElementById("newyorkgeorgiafraction").innerHTML=Math.round(stats_by_state["NY"]["positive"]/stats_by_state["GA"]["positive"]);
+
+    document.getElementById("georgiapopulationlower").innerHTML=parseFloat((stats_population_by_state["GA"]["lower95"]).toPrecision(2));
+    document.getElementById("georgiapopulationupper").innerHTML=parseFloat((stats_population_by_state["GA"]["upper95"]).toPrecision(2));
+    document.getElementById("newyorkpopulationlower").innerHTML=parseFloat((stats_population_by_state["NY"]["lower95"]).toPrecision(2));
+    document.getElementById("newyorkpopulationupper").innerHTML=parseFloat((stats_population_by_state["NY"]["upper95"]).toPrecision(2));
+    
+</script>
 
 ## Model
 To estimate the number of infections in a state, we run 500 stochastic simulations starting from a single infected individual, and stop each simulation when it reaches the number of deaths currently recorded in that state. Simulations are discarded if they predict fewer infections than the number of confirmed cases.
 
 Infections are simulated using a poisson branching process, where the serial interval (time for one individual to infect another) is drawn from a Log-Normal distribution (mean: 4.7 days, std: 2.9 days). The onset-to-death interval for each individual is drawn from a Gamma distribution (mean: 15 days, std: 6.9 days).
+
+_Note, this model differs from Jombart et al. in two ways: (1) whereas Jombart et al. sample backwards from each death (using the onset-to-death distribution) to estimate the date on which an individual was infected, this model simulates forwards from a single infection on day 0. The specific date of each death is ignored, and instead each simulation is simply run until it reaches the total number of observed deaths (or discarded if it does not). (2) Unlike Jombart et al., we incorporate testing information by discarding simulations which do not reach the total number of *confirmed cases*. This significantly increases the estimated prevalence in states with a large number of confirmed cases._
 
 Contact: _lbh (at) mit (dot) edu_
