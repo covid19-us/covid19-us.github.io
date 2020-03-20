@@ -154,7 +154,7 @@ if __name__ == "__main__":
                     denom = pop/100000 if norm_by_population else 1
 
                     allrecords = [d for d in data if d['state'] == state]
-                    allrecords = sorted(allrecords, key=get_positive)
+                    allrecords = sorted(allrecords, key=lambda x: x['date'])
 
                     if get_positive(allrecords[-1]) > 0:
                         if 'death' in allrecords[-1] and allrecords[-1]['death'] is not None:
@@ -170,7 +170,7 @@ if __name__ == "__main__":
                             stats[state] = {
                                 # 'sortorder': (-get_positive(allrecords[-1])/denom, -deaths/denom, state),
                                 'positive': get_positive(allrecords[-1])/denom,
-                                'negative': get_positive(allrecords[-1])/denom,
+                                'negative': get_negative(allrecords[-1])/denom,
                                 'deaths': deaths/denom
                             }
                         else:
@@ -184,7 +184,7 @@ if __name__ == "__main__":
                             stats[state] = {
                                 # 'sortorder': (-get_positive(allrecords[-1])/denom, -deaths/denom, state),
                                 'positive': get_positive(allrecords[-1])/denom,
-                                'negative': get_positive(allrecords[-1])/denom,
+                                'negative': get_negative(allrecords[-1])/denom,
                                 'deaths': deaths/denom,
                                 'lower95': predictions[int(len(predictions)*0.025)]/denom,
                                 'lower90': predictions[int(len(predictions)*0.05)]/denom,

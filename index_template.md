@@ -257,7 +257,7 @@ WARNING: I am not an epidemiologist, please do not use this model to make precis
 
 </script>
 <div style="padding-top:15px; padding-bottom:15px;">
-<i>You can hover or click any point on the graph above to see its numerical value.</i>
+<i>You can hover or click any point on the graph above to see its value (95% confidence interval for estimates)</i>
 </div>
 
 The model is fairly sensitive to the choice of CFR (_Case Fataility Rate_: the proportion of cases which are fatal) and R<sub>0</sub> (_Reproduction Number_: the average number of people each person infects):
@@ -266,15 +266,17 @@ The model is fairly sensitive to the choice of CFR (_Case Fataility Rate_: the p
 
 By default, if R<sub>0</sub> and CFR are not provided, we marginalise over all values to avoid making predictions which are over-confident. 
 
-## Differences in testing between states
+## Estimation from confirmed cases vs. deaths
 <p>
-This chart highlights the danger of relying on <i>confirmed cases</i> to estimate the prevalence of COVID-19 in a given state.
+This chart highlights the large difference between using <i>confirmed cases</i> vs. <i>deaths</i> to estimate the prevalence of COVID-19 in a state.
 </p>
 
-<p>For example, the state of Georgia (population ~10 million) has so far suffered <span id="georgiadeaths" class="stat"></span> deaths with <span id="georgiacases" class="stat"></span> confirmed cases (total tested: <span id="georgiatotal" class="stat"></span>). By comparison, the state of New York (population ~20 million) has suffered <span id="newyorkdeaths" class="stat"></span> deaths with <span id="newyorkcases" class="stat"></span> confirmed cases (total tested: <span id="newyorktotal" class="stat"></span>).
+<p>For example, Louisiana (population ~5 million) has so far suffered <span id="louisianadeaths" class="stat"></span> deaths with only <span id="louisianacases" class="stat"></span> confirmed cases (total tested: <span id="louisianatotal" class="stat"></span>).<br/> By comparison, New York state (population ~20 million) has suffered <span id="newyorkdeaths" class="stat"></span> deaths with <span id="newyorkcases" class="stat"></span> confirmed cases (total tested: <span id="newyorktotal" class="stat"></span>).
 </p>
 
-<p>Comparing only the number of confirmed cases, it would be easy to assume that the prevalence of COVID-19 is <span id="newyorkgeorgiafraction"></span>x larger in New York than in Georgia. However, taking into account fatailities and population size, this model predicts similar prevalence in these two states: roughly <span id="georgiapopulationlower" class="stat"></span>-<span id="georgiapopulationupper" class="stat"></span> cases per 100,000 people in Georgia, and  <span id="newyorkpopulationlower" class="stat"></span>-<span id="newyorkpopulationupper" class="stat"></span> cases per 100,000 people in New York.
+<p>Comparing only the number of confirmed cases, it would be easy to assume that the prevalence of COVID-19 is
+<span id="newyorklouisianafraction"></span>x
+larger in New York than in Louisiana. However, when estimated by fatailities, this model suggests that the prevalence could well be similar in these states, with estimates ranging from <span id="louisianapopulationlower" class="stat"></span>-<span id="louisianapopulationupper" class="stat"></span> cases per 100,000 people in Louisiana, and  <span id="newyorkpopulationlower" class="stat"></span>-<span id="newyorkpopulationupper" class="stat"></span> cases per 100,000 people in New York.
 </p>
 
 <script>
@@ -288,17 +290,17 @@ This chart highlights the danger of relying on <i>confirmed cases</i> to estimat
     for(var i=0; i<stats_population.length; i++) {
         stats_population_by_state[stats_population[i][0]] = stats_population[i][1];
     }
-    document.getElementById("georgiacases").innerHTML=stats_by_state["GA"]["positive"];
-    document.getElementById("georgiadeaths").innerHTML=stats_by_state["GA"]["deaths"];
-    document.getElementById("georgiatotal").innerHTML=stats_by_state["GA"]["positive"] + stats_by_state["GA"]["negative"];
+    document.getElementById("louisianacases").innerHTML=stats_by_state["LA"]["positive"];
+    document.getElementById("louisianadeaths").innerHTML=stats_by_state["LA"]["deaths"];
+    document.getElementById("louisianatotal").innerHTML=stats_by_state["LA"]["positive"] + stats_by_state["LA"]["negative"];
     document.getElementById("newyorkcases").innerHTML=stats_by_state["NY"]["positive"];
     document.getElementById("newyorkdeaths").innerHTML=stats_by_state["NY"]["deaths"];
     document.getElementById("newyorktotal").innerHTML=stats_by_state["NY"]["positive"] + stats_by_state["NY"]["negative"];
 
-    document.getElementById("newyorkgeorgiafraction").innerHTML=Math.round(stats_by_state["NY"]["positive"]/stats_by_state["GA"]["positive"]);
+    document.getElementById("newyorklouisianafraction").innerHTML=Math.round(stats_population_by_state["NY"]["positive"]/stats_population_by_state["LA"]["positive"]);
 
-    document.getElementById("georgiapopulationlower").innerHTML=parseFloat((stats_population_by_state["GA"]["lower95"]).toPrecision(2));
-    document.getElementById("georgiapopulationupper").innerHTML=parseFloat((stats_population_by_state["GA"]["upper95"]).toPrecision(2));
+    document.getElementById("louisianapopulationlower").innerHTML=parseFloat((stats_population_by_state["LA"]["lower95"]).toPrecision(2));
+    document.getElementById("louisianapopulationupper").innerHTML=parseFloat((stats_population_by_state["LA"]["upper95"]).toPrecision(2));
     document.getElementById("newyorkpopulationlower").innerHTML=parseFloat((stats_population_by_state["NY"]["lower95"]).toPrecision(2));
     document.getElementById("newyorkpopulationupper").innerHTML=parseFloat((stats_population_by_state["NY"]["upper95"]).toPrecision(2));
     
@@ -309,6 +311,6 @@ To estimate the number of infections in a state, we run 500 stochastic simulatio
 
 Infections are simulated using a poisson branching process, where the serial interval (time for one individual to infect another) is drawn from a Log-Normal distribution (mean: 4.7 days, std: 2.9 days). The onset-to-death interval for each individual is drawn from a Gamma distribution (mean: 15 days, std: 6.9 days).
 
-_Note, this model differs from Jombart et al. in two ways: (1) whereas Jombart et al. sample backwards from each death (using the onset-to-death distribution) to estimate the date on which an individual was infected, this model simulates forwards from a single infection on day 0. The specific date of each death is ignored, and instead each simulation is simply run until it reaches the total number of observed deaths (or discarded if it does not). (2) Unlike Jombart et al., we incorporate testing information by discarding simulations which do not reach the total number of *confirmed cases*. This significantly increases the estimated prevalence in states with a large number of confirmed cases._
+_Note, this model differs from Jombart et al. in two ways: (1) whereas Jombart et al. sample backwards from each death, using the onset-to-death distribution to estimate when an individual was infected, this model simulates forwards from a single infection. The specific date of each death is ***ignored***, and instead each simulation runs until it reaches the total number of observed deaths (or is discarded if it does not). (2) Unlike Jombart et al., this model incorporates testing information by discarding simulations which do not reach the total number of confirmed cases. This significantly increases the estimated prevalence in states with a large number of confirmed cases._
 
 Contact: _lbh (at) mit (dot) edu_
