@@ -2,7 +2,7 @@
 layout: default
 ---
 
-Because tests for COVID-19 are lagging in the US, confirmed cases provide only a loose lower bound on the number of infected people. This page estimates the total number of infections in each state, based on the number of deaths. _Updates daily._
+Because tests for COVID-19 are lagging in the US, confirmed cases provide only a loose lower bound on the number of infected people. This page estimates the total number of infections in each state, based on the number of deaths. _Updates every two hours._
 
 The model is inspired by the paper _Inferring the number of COVID-19 cases from recently reported deaths_ ([Jombart et al.](https://www.medrxiv.org/content/10.1101/2020.03.10.20033761v1.full.pdf), [interactive](https://cmmid.github.io/visualisations/inferring-covid19-cases-from-deaths)) which estimates that, by the time a death occurs,
 roughly "hundreds to thousands" of cases are likely to be present in a population.

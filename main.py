@@ -7,7 +7,6 @@ import scipy.stats
 import datetime
 import random
 import math
-from matplotlib import pyplot as plt
 
 n_simulations = 500
 step = 1  # timestep (days)
