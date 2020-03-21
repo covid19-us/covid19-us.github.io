@@ -208,7 +208,7 @@ if __name__ == "__main__":
                 allstats["{},{},{}".format(R0, CFR, norm_by_population)] = stats_sorted
 
     # Update webpage
-    dateint = max(x['date'] for x in allrecords)
+    dateint = max(d['date'] for d in data)
     datestr = "{}-{}-{}".format(str(dateint)
                                 [:4], str(dateint)[4:6], str(dateint)[6:8])
 
