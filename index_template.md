@@ -134,12 +134,16 @@ WARNING: I am not an epidemiologist, please do not use this model to make precis
                 x: Array(stats.length).fill(1).map((v, j) => j+1),
                 y: Array(stats.length).fill(1).map((v, j) => stats[j][1]['median']),
                 hoverinfo:'text',
-                text: Array(stats.length).fill(1).map((v, j) => "(" + stats[j][0] + ", " + (
-                    stats[j][1]['lower95'] > 1000 ?
-                        (parseFloat((stats[j][1]['lower95']).toPrecision(2))/1000 + "k-" + parseFloat((stats[j][1]['upper95']).toPrecision(2))/1000 + "k)") :
-                        (parseFloat((stats[j][1]['lower95']).toPrecision(2)) + "-" + parseFloat((stats[j][1]['upper95']).toPrecision(2)) + ")")
-                    )
-                ),
+                text: Array(stats.length).fill(1).map((v, j) => stats[j][0] + "<br>" + (
+                    (stats[j][1]['lower50'] > 1000 ?
+                        (parseFloat((stats[j][1]['lower50']).toPrecision(2))/1000 + "k-" + parseFloat((stats[j][1]['upper50']).toPrecision(2))/1000 + "k") :
+                        (parseFloat((stats[j][1]['lower50']).toPrecision(2)) + "-" + parseFloat((stats[j][1]['upper50']).toPrecision(2)) + "")
+                    ) + " (50%)<br>" + 
+                    (stats[j][1]['lower95'] > 1000 ?
+                        (parseFloat((stats[j][1]['lower95']).toPrecision(2))/1000 + "k-" + parseFloat((stats[j][1]['upper95']).toPrecision(2))/1000 + "k") :
+                        (parseFloat((stats[j][1]['lower95']).toPrecision(2)) + "-" + parseFloat((stats[j][1]['upper95']).toPrecision(2)) + "")
+                    ) + " (95%)"
+                )),
                 marker: {
                     color: col,
                     opacity: 0
@@ -257,7 +261,7 @@ WARNING: I am not an epidemiologist, please do not use this model to make precis
 
 </script>
 <div style="padding-top:15px; padding-bottom:15px;">
-<i>You can hover or click any point on the graph above to see its value (95% confidence interval for estimates)</i>
+<i>You can hover or click any point on the graph above to see its value (confidence interval for estimates)</i>
 </div>
 
 The model is fairly sensitive to the choice of CFR (_Case Fataility Rate_: the proportion of cases which are fatal) and R<sub>0</sub> (_Reproduction Number_: the average number of people each person infects):
@@ -276,7 +280,7 @@ This chart highlights the large difference between using <i>confirmed cases</i> 
 
 <p>Comparing only the number of confirmed cases, it would be easy to assume that the prevalence of COVID-19 is
 <span id="newyorklouisianafraction"></span>x
-larger in New York than in Louisiana. However, when estimated by fatailities, this model suggests that the prevalence could well be similar in these states, with estimates ranging from <span id="louisianapopulationlower" class="stat"></span>-<span id="louisianapopulationupper" class="stat"></span> cases per 100,000 people in Louisiana, and  <span id="newyorkpopulationlower" class="stat"></span>-<span id="newyorkpopulationupper" class="stat"></span> cases per 100,000 people in New York.
+larger in New York than in Louisiana. However, when estimated by fatailities, this model suggests that the prevalence could well be similar in these states, with an estimate of roughly <span id="louisianapopulationlower" class="stat"></span>-<span id="louisianapopulationupper" class="stat"></span> cases per 100,000 people in Louisiana, and  <span id="newyorkpopulationlower" class="stat"></span>-<span id="newyorkpopulationupper" class="stat"></span> cases per 100,000 people in New York.
 </p>
 
 <script>
@@ -299,10 +303,10 @@ larger in New York than in Louisiana. However, when estimated by fatailities, th
 
     document.getElementById("newyorklouisianafraction").innerHTML=Math.round(stats_population_by_state["NY"]["positive"]/stats_population_by_state["LA"]["positive"]);
 
-    document.getElementById("louisianapopulationlower").innerHTML=parseFloat((stats_population_by_state["LA"]["lower95"]).toPrecision(2));
-    document.getElementById("louisianapopulationupper").innerHTML=parseFloat((stats_population_by_state["LA"]["upper95"]).toPrecision(2));
-    document.getElementById("newyorkpopulationlower").innerHTML=parseFloat((stats_population_by_state["NY"]["lower95"]).toPrecision(2));
-    document.getElementById("newyorkpopulationupper").innerHTML=parseFloat((stats_population_by_state["NY"]["upper95"]).toPrecision(2));
+    document.getElementById("louisianapopulationlower").innerHTML=parseFloat((stats_population_by_state["LA"]["lower50"]).toPrecision(2));
+    document.getElementById("louisianapopulationupper").innerHTML=parseFloat((stats_population_by_state["LA"]["upper50"]).toPrecision(2));
+    document.getElementById("newyorkpopulationlower").innerHTML=parseFloat((stats_population_by_state["NY"]["lower50"]).toPrecision(2));
+    document.getElementById("newyorkpopulationupper").innerHTML=parseFloat((stats_population_by_state["NY"]["upper50"]).toPrecision(2));
     
 </script>
 
