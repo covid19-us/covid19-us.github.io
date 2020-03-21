@@ -179,7 +179,7 @@ WARNING: I am not an epidemiologist, please do not use this model to make precis
         }
         layout = {
             hovermode: 'closest',
-            title: 'COVID-19 by state <i>(updated {{ date }})</i>',
+            title: 'COVID-19 by state',
             xaxis: {
                 tickvals: Array(stats.length).fill(1).map((v, j) => j+1),
                 ticktext: Array(stats.length).fill(1).map((v, j) => stats[j][0]),
@@ -303,10 +303,10 @@ larger in New York than in Louisiana. However, when estimated by fatailities, th
 
     document.getElementById("newyorklouisianafraction").innerHTML=Math.round(stats_population_by_state["NY"]["positive"]/stats_population_by_state["LA"]["positive"]);
 
-    document.getElementById("louisianapopulationlower").innerHTML=parseFloat((stats_population_by_state["LA"]["lower50"]).toPrecision(2));
-    document.getElementById("louisianapopulationupper").innerHTML=parseFloat((stats_population_by_state["LA"]["upper50"]).toPrecision(2));
-    document.getElementById("newyorkpopulationlower").innerHTML=parseFloat((stats_population_by_state["NY"]["lower50"]).toPrecision(2));
-    document.getElementById("newyorkpopulationupper").innerHTML=parseFloat((stats_population_by_state["NY"]["upper50"]).toPrecision(2));
+    document.getElementById("louisianapopulationlower").innerHTML=parseFloat((stats_population_by_state["LA"]["lower95"]).toPrecision(2));
+    document.getElementById("louisianapopulationupper").innerHTML=parseFloat((stats_population_by_state["LA"]["upper95"]).toPrecision(2));
+    document.getElementById("newyorkpopulationlower").innerHTML=parseFloat((stats_population_by_state["NY"]["lower95"]).toPrecision(2));
+    document.getElementById("newyorkpopulationupper").innerHTML=parseFloat((stats_population_by_state["NY"]["upper95"]).toPrecision(2));
     
 </script>
 
