@@ -280,7 +280,7 @@ This chart highlights the large difference between using <i>confirmed cases</i> 
 
 <p>Comparing only the number of confirmed cases, it would be easy to assume that the prevalence of COVID-19 is
 <span id="newyorklouisianafraction"></span>x
-larger in New York than in Louisiana. However, when estimated by fatailities, this model suggests that the prevalence could well be similar in these states, with an estimate of roughly <span id="louisianapopulationlower" class="stat"></span>-<span id="louisianapopulationupper" class="stat"></span> cases per 100,000 people in Louisiana, and  <span id="newyorkpopulationlower" class="stat"></span>-<span id="newyorkpopulationupper" class="stat"></span> cases per 100,000 people in New York.
+larger in New York than in Louisiana. However, when estimated by fatailities, this model suggests that the prevalence could well be similar in these states, with estimates ranging from <span id="louisianapopulationlower" class="stat"></span>-<span id="louisianapopulationupper" class="stat"></span> cases per 100,000 people in Louisiana, and  <span id="newyorkpopulationlower" class="stat"></span>-<span id="newyorkpopulationupper" class="stat"></span> cases per 100,000 people in New York.
 </p>
 
 <script>
