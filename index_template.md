@@ -275,12 +275,12 @@ By default, if R<sub>0</sub> and CFR are not provided, we marginalise over all v
 This chart highlights the large difference between using <i>confirmed cases</i> vs. <i>deaths</i> to estimate the prevalence of COVID-19 in a state.
 </p>
 
-<p>For example, Louisiana (population ~5 million) has so far suffered <span id="louisianadeaths" class="stat"></span> deaths with only <span id="louisianacases" class="stat"></span> confirmed cases (total tested: <span id="louisianatotal" class="stat"></span>).<br/> By comparison, New York state (population ~20 million) has suffered <span id="newyorkdeaths" class="stat"></span> deaths with <span id="newyorkcases" class="stat"></span> confirmed cases (total tested: <span id="newyorktotal" class="stat"></span>).
+<p>For example, Louisiana (population ~5 million) has so far suffered <span id="louisianadeaths" class="stat"></span> deaths with only <span id="louisianacases" class="stat"></span> confirmed cases (total tested: <span id="louisianatotal" class="stat"></span>).<br/> By comparison, New Jersey (population ~9 million) has suffered <span id="newjerseydeaths" class="stat"></span> deaths with <span id="newjerseycases" class="stat"></span> confirmed cases (total tested: <span id="newjerseytotal" class="stat"></span>).
 </p>
 
-<p>Comparing only the number of confirmed cases, it would be easy to assume that the prevalence of COVID-19 is
-<span id="newyorklouisianafraction"></span>x
-larger in New York than in Louisiana. However, when estimated by fatailities, this model suggests that the prevalence could well be similar in these states, with estimates ranging from <span id="louisianapopulationlower" class="stat"></span>-<span id="louisianapopulationupper" class="stat"></span> cases per 100,000 people in Louisiana, and  <span id="newyorkpopulationlower" class="stat"></span>-<span id="newyorkpopulationupper" class="stat"></span> cases per 100,000 people in New York.
+<p>Comparing only the number of confirmed cases, it would be easy to assume that the prevalence of COVID-19 is significantly
+<!-- <span id="newjerseylouisianafraction"></span>x -->
+larger in New Jersey than in Louisiana. However, when estimated by fatailities, this model suggests that the prevalence could be larger in Louisiana, with estimates ranging from <span id="louisianapopulationlower" class="stat"></span>-<span id="louisianapopulationupper" class="stat"></span> cases per 100,000 people in Louisiana, and  <span id="newjerseypopulationlower" class="stat"></span>-<span id="newjerseypopulationupper" class="stat"></span> cases per 100,000 people in New Jersey.
 </p>
 
 <script>
@@ -297,16 +297,16 @@ larger in New York than in Louisiana. However, when estimated by fatailities, th
     document.getElementById("louisianacases").innerHTML=stats_by_state["LA"]["positive"];
     document.getElementById("louisianadeaths").innerHTML=stats_by_state["LA"]["deaths"];
     document.getElementById("louisianatotal").innerHTML=stats_by_state["LA"]["positive"] + stats_by_state["LA"]["negative"];
-    document.getElementById("newyorkcases").innerHTML=stats_by_state["NY"]["positive"];
-    document.getElementById("newyorkdeaths").innerHTML=stats_by_state["NY"]["deaths"];
-    document.getElementById("newyorktotal").innerHTML=stats_by_state["NY"]["positive"] + stats_by_state["NY"]["negative"];
+    document.getElementById("newjerseycases").innerHTML=stats_by_state["NJ"]["positive"];
+    document.getElementById("newjerseydeaths").innerHTML=stats_by_state["NJ"]["deaths"];
+    document.getElementById("newjerseytotal").innerHTML=stats_by_state["NJ"]["positive"] + stats_by_state["NJ"]["negative"];
 
-    document.getElementById("newyorklouisianafraction").innerHTML=Math.round(stats_population_by_state["NY"]["positive"]/stats_population_by_state["LA"]["positive"]);
+    document.getElementById("newjerseylouisianafraction").innerHTML=Math.round(stats_population_by_state["NJ"]["positive"]/stats_population_by_state["LA"]["positive"]);
 
     document.getElementById("louisianapopulationlower").innerHTML=parseFloat((stats_population_by_state["LA"]["lower95"]).toPrecision(2));
     document.getElementById("louisianapopulationupper").innerHTML=parseFloat((stats_population_by_state["LA"]["upper95"]).toPrecision(2));
-    document.getElementById("newyorkpopulationlower").innerHTML=parseFloat((stats_population_by_state["NY"]["lower95"]).toPrecision(2));
-    document.getElementById("newyorkpopulationupper").innerHTML=parseFloat((stats_population_by_state["NY"]["upper95"]).toPrecision(2));
+    document.getElementById("newjerseypopulationlower").innerHTML=parseFloat((stats_population_by_state["NJ"]["lower95"]).toPrecision(2));
+    document.getElementById("newjerseypopulationupper").innerHTML=parseFloat((stats_population_by_state["NJ"]["upper95"]).toPrecision(2));
     
 </script>
 
