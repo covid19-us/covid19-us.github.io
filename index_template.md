@@ -146,7 +146,7 @@ WARNING: I am not an epidemiologist, please do not use this model to make precis
                 )),
                 marker: {
                     color: col,
-                    opacity: 0
+                    // opacity: 0
                 },
                 type: 'scatter',
                 mode: 'markers',
@@ -170,7 +170,7 @@ WARNING: I am not an epidemiologist, please do not use this model to make precis
         for(var j=0; j<stats.length; j++) {
             if(stats[j][1]['lower50'] != undefined) {
                 shapes.push(
-                    {layer:'below', type:'line', line:{width:3, color:col}, 
+                    {layer:'below', type:'line', line:{width:2, color:col}, 
                     x0: j+1, x1: j+1, y0: stats[j][1]['lower50'], y1: stats[j][1]['upper50'] });
                 shapes.push(
                     {layer:'below', type:'line', line:{width:1, color:col, opacity:0.3}, 
@@ -179,7 +179,7 @@ WARNING: I am not an epidemiologist, please do not use this model to make precis
         }
         layout = {
             hovermode: 'closest',
-            title: 'COVID-19 by state',
+            title: 'COVID-19 cases by state',
             xaxis: {
                 tickvals: Array(stats.length).fill(1).map((v, j) => j+1),
                 ticktext: Array(stats.length).fill(1).map((v, j) => stats[j][0]),
@@ -224,7 +224,7 @@ WARNING: I am not an epidemiologist, please do not use this model to make precis
             } else {
                 // layout.yaxis.range = [0, 30];
                 // layout.yaxis.range = [0, 1e4];
-                layout.yaxis.range = [0, stats[1][1]['upper50']*1.1];
+                layout.yaxis.range = [0, stats[0][1]['median']*1.05];
                 layout.yaxis.hoverformat = '.2r';
                 layout.yaxis.tickformat = '.1r';
             }
@@ -241,7 +241,7 @@ WARNING: I am not an epidemiologist, please do not use this model to make precis
             } else {
                 // layout.yaxis.range = [0, 5005];
                 // layout.yaxis.range = [0, 1e5];
-                layout.yaxis.range = [0, stats[1][1]['upper50']*1.1];
+                layout.yaxis.range = [0, stats[0][1]['median']*1.05];
                 layout.yaxis.hoverformat = 'd';
                 layout.yaxis.tickformat = 'd';
             }
@@ -280,7 +280,7 @@ This chart highlights the large difference between using <i>confirmed cases</i> 
 
 <p>Comparing only the number of confirmed cases, it would be easy to assume that the prevalence of COVID-19 is
 <span id="newyorklouisianafraction"></span>x
-larger in New York than in Louisiana. However, when estimated by fatailities, this model suggests that the prevalence could well be similar in these states, with an estimate of roughly <span id="louisianapopulationlower" class="stat"></span>-<span id="louisianapopulationupper" class="stat"></span> cases per 100,000 people in Louisiana, and  <span id="newyorkpopulationlower" class="stat"></span>-<span id="newyorkpopulationupper" class="stat"></span> cases per 100,000 people in New York.
+larger in New York than in Louisiana. However, when estimated by fatailities, this model suggests that the prevalence could well be similar in these states, with estimates ranging from <span id="louisianapopulationlower" class="stat"></span>-<span id="louisianapopulationupper" class="stat"></span> cases per 100,000 people in Louisiana, and  <span id="newyorkpopulationlower" class="stat"></span>-<span id="newyorkpopulationupper" class="stat"></span> cases per 100,000 people in New York.
 </p>
 
 <script>
