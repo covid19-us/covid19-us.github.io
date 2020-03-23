@@ -301,7 +301,7 @@ larger in New Jersey than in Louisiana. However, when estimated by fatailities, 
     document.getElementById("newjerseydeaths").innerHTML=stats_by_state["NJ"]["deaths"];
     document.getElementById("newjerseytotal").innerHTML=stats_by_state["NJ"]["positive"] + stats_by_state["NJ"]["negative"];
 
-    document.getElementById("newjerseylouisianafraction").innerHTML=Math.round(stats_population_by_state["NJ"]["positive"]/stats_population_by_state["LA"]["positive"]);
+    // document.getElementById("newjerseylouisianafraction").innerHTML=Math.round(stats_population_by_state["NJ"]["positive"]/stats_population_by_state["LA"]["positive"]);
 
     document.getElementById("louisianapopulationlower").innerHTML=parseFloat((stats_population_by_state["LA"]["lower95"]).toPrecision(2));
     document.getElementById("louisianapopulationupper").innerHTML=parseFloat((stats_population_by_state["LA"]["upper95"]).toPrecision(2));
