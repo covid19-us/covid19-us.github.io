@@ -15,7 +15,7 @@ US_STATE_POPULATIONS = {"AL": 4903185, "AK": 731545, "AZ": 7278717, "AR": 301780
                         "MO": 6137428, "MT": 1068778, "NE": 1934408, "NV": 3080156, "NH": 1359711, "NJ": 8882190, "NM": 2096829, "NY": 19453561, "NC": 10488084, "ND": 762062, "OH": 11689100, "OK": 3956971, "OR": 4217737, "PA": 12801989, "RI": 1059361, "SC": 5148714, "SD": 884659, "TN": 6829174, "TX": 28995881, "UT": 3205958, "VT": 623989, "VA": 8535519, "WA": 7614893, "WV": 1792147, "WI": 5822434, "WY": 578759}
 
 
-def sim_days(R0=2.5, CFR=0.02):
+def sim_days(R0=2.5, CFR=0.02, max_deaths=5000):
     """
     Run simulation with given reproduction number (R0) and case fatality
     ratio (CFR), starting from a single case.
@@ -52,7 +52,7 @@ def sim_days(R0=2.5, CFR=0.02):
             new_cases[t2] += (add_cases == t2).sum()
             new_deaths[t2] += (add_deaths == t2).sum()
 
-        if np.sum(new_deaths[:t1]) > 200:
+        if np.sum(new_deaths[:t1]) > max_deaths:
             break
 
     return (np.cumsum(new_cases[:t1]).tolist(),
