@@ -2,8 +2,8 @@
 layout: default
 ---
 
-<div style="border: 1px solid black; text-align:center; font-weight: bold; padding-bottom:15px">
-Warning: This webpage was created to make predictions at the start of the outbreak, when prevalence was relatively low. At this time, the growth rate was also roughly constant because social distancing measures were not yet widely implemented. The model relied upon these assumptions, and now that they do not hold in most states, it is likely to overestimate the number of people infected. The model will remain online, but should not no longer be taken to reflect a reasonable best-guess of COVID-19 prevalence.
+<div style="border: 1px solid black; font-weight: bold; padding: 15px; margin: 15px;">
+    <span style="color:red">Warning:</span> This webpage was created to make predictions at the start of the outbreak, when prevalence was relatively low. At this time, the growth rate was also roughly constant because social distancing measures were not yet widely implemented. The model relied upon these assumptions, and now that they do not hold in most states, it is likely to overestimate the number of people infected. The model will remain online, but should not no longer be taken to reflect a reasonable best-guess of COVID-19 prevalence.
 </div>
 
 Because tests for COVID-19 are lagging in the US, confirmed cases provide only a loose lower bound on the number of infected people. This page estimates the total number of infections in each state, based on the number of deaths. _Updates daily._
