@@ -2,16 +2,16 @@
 layout: default
 ---
 
+<div style="border: 1px solid black; text-align:center; font-weight: bold; padding-bottom:15px">
+Warning: This webpage was created to make predictions at the start of the outbreak, when prevalence was relatively low. At this time, the growth rate was also roughly constant because social distancing measures were not yet widely implemented. The model relied upon these assumptions, and now that they do not hold in most states, it is likely to overestimate the number of people infected. The model will remain online, but should not no longer be taken to reflect a reasonable best-guess of COVID-19 prevalence.
+</div>
+
 Because tests for COVID-19 are lagging in the US, confirmed cases provide only a loose lower bound on the number of infected people. This page estimates the total number of infections in each state, based on the number of deaths. _Updates daily._
 
 The model is inspired by the paper _Inferring the number of COVID-19 cases from recently reported deaths_ ([Jombart et al.](https://www.medrxiv.org/content/10.1101/2020.03.10.20033761v1.full.pdf), [interactive](https://cmmid.github.io/visualisations/inferring-covid19-cases-from-deaths)) which estimates that, by the time a death occurs,
 roughly "hundreds to thousands" of cases are likely to be present in a population.
 
 Data from [covidtracking.com](https://covidtracking.com/). Source code is on [GitHub](https://github.com/covid19-us/covid19-us.github.io). Best viewed on desktop.
-
-<div style="text-align:center; font-weight: bold; padding-bottom:15px">
-WARNING: I am not an epidemiologist, please do not use this model to make precise predictions!
-</div>
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <style type="text/css">
