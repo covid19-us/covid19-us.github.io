@@ -280,7 +280,7 @@ This chart highlights the large difference between using <i>confirmed cases</i> 
 
 <p>Comparing only the number of confirmed cases, it would be easy to assume that the prevalence of COVID-19 is significantly
 <!-- <span id="newjerseylouisianafraction"></span>x -->
-larger in New Jersey than in Louisiana. However, when estimated by fatailities, this model suggests that the prevalence could be larger in Louisiana, with estimates ranging from <span id="louisianapopulationlower" class="stat"></span>-<span id="louisianapopulationupper" class="stat"></span> cases per 100,000 people in Louisiana, and  <span id="newjerseypopulationlower" class="stat"></span>-<span id="newjerseypopulationupper" class="stat"></span> cases per 100,000 people in New Jersey.
+larger in New Jersey than in Louisiana. However, when estimated by fatailities, this model suggests that the prevalence could be more similar in these states, with estimates ranging from <span id="louisianapopulationlower" class="stat"></span>-<span id="louisianapopulationupper" class="stat"></span> cases per 100,000 people in Louisiana, and  <span id="newjerseypopulationlower" class="stat"></span>-<span id="newjerseypopulationupper" class="stat"></span> cases per 100,000 people in New Jersey.
 </p>
 
 <script>
